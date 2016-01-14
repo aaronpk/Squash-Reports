@@ -28,28 +28,6 @@ class Slack extends BaseController {
     $login = json_decode($res->getBody());
     if($login && property_exists($login, 'access_token')) {
 
-      // Look up the team ID in the database
-      $slackteam = DB::table('slack_teams')->where('slack_teamid', $login->team_id)->first();
-      if(!$slackteam) {
-
-        // Create the org and slack team
-        $orgID = DB::table('orgs')->insertGetId([
-          'name' => $login->team_name,
-          'created_at' => date('Y-m-d H:i:s'),
-          'slack_token' => $login->access_token
-        ]);
-
-        DB::table('slack_teams')->insertGetId([
-          'slack_teamid' => $login->team_id,
-          'slack_teamname' => $login->team_name,
-          'org_id' => $orgID,
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-
-      } else {
-        $orgID = $slackteam->org_id;
-      }
-
       // Look up the user info for whoever just logged in
       $res = $client->request('GET', 'https://slack.com/api/auth.test', [
         'query' => [
@@ -59,6 +37,29 @@ class Slack extends BaseController {
       Log::info("auth.test: ".$res->getBody());
       $auth = json_decode($res->getBody());
       if($auth && $auth->ok) {
+
+        // Look up the team ID in the database
+        $slackteam = DB::table('slack_teams')->where('slack_teamid', $login->team_id)->first();
+        if(!$slackteam) {
+
+          // Create the org and slack team
+          $orgID = DB::table('orgs')->insertGetId([
+            'name' => $login->team_name,
+            'created_at' => date('Y-m-d H:i:s')
+          ]);
+
+          DB::table('slack_teams')->insertGetId([
+            'slack_teamid' => $login->team_id,
+            'slack_teamname' => $login->team_name,
+            'org_id' => $orgID,
+            'slack_token' => $login->access_token,
+            'slack_url' => $auth->url,
+            'created_at' => date('Y-m-d H:i:s')
+          ]);
+
+        } else {
+          $orgID = $slackteam->org_id;
+        }
 
         // Check if the Slack user already exists
         $slackuser = DB::table('slack_users')->where('slack_userid', $auth->user_id)->first();
@@ -114,7 +115,7 @@ class Slack extends BaseController {
 
     if(!$slackuser) {
       // Look up the user info for this slack user since they might already have an account in the org with the same email
-      $userInfo = $this->slackUserInfo($org->slack_token, $request->input('user_id'));
+      $userInfo = $this->slackUserInfo($team->slack_token, $request->input('user_id'));
       if($userInfo) {
 
         // Create the new user account or look up existing
