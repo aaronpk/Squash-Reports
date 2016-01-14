@@ -2,13 +2,17 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use GuzzleHttp;
 use DB;
 use Log;
 use Auth;
+use App\Jobs\ReplyViaSlack;
 
 class Slack extends BaseController {
+
+  use DispatchesJobs;
 
   public function redirect(Request $request) {
     $client = new GuzzleHttp\Client();
@@ -59,41 +63,12 @@ class Slack extends BaseController {
         // Check if the Slack user already exists
         $slackuser = DB::table('slack_users')->where('slack_userid', $auth->user_id)->first();
         if(!$slackuser) {
-          $res = $client->request('GET', 'https://slack.com/api/users.info', [
-            'query' => [
-              'token' => $login->access_token,
-              'user' => $auth->user_id
-            ]
-          ]);
-          Log::info("users.info: ".$res->getBody());
-          $userInfo = json_decode($res->getBody());
-          if($userInfo && $userInfo->ok) {
+          $userInfo = $this->slackUserInfo($login->access_token, $auth->user_id);
+          if($userInfo) {
 
             // Check if there is already a user account for the email on this slack user
-            $user = DB::table('users')
-              ->where('org_id', $orgID)
-              ->where('email', $userInfo->user->profile->email)
-              ->first();
-            if($user) {
-              $userID = $user->id;
-            } else {
-              $userID = DB::table('users')->insertGetId([
-                'org_id' => $orgID,
-                'username' => $userInfo->user->name,
-                'email' => $userInfo->user->profile->email,
-                'display_name' => $userInfo->user->profile->real_name,
-                'photo_url' => $userInfo->user->profile->image_512,
-                'timezone' => $userInfo->user->tz,
-                'tz_offset' => $userInfo->user->tz_offset,
-                'created_at' => date('Y-m-d H:i:s')
-              ]);
-            }
-
-            $slackuser = DB::table('slack_users')->insertGetId([
-              'slack_userid' => $auth->user_id,
-              'user_id' => $userID,
-              'created_at' => date('Y-m-d H:i:s')
-            ]);
+            list($userID, $new) = $this->getOrCreateUser($orgID, $userInfo);
+            $this->createSlackUser($userID, $auth->user_id);
 
           } else {
             // Error getting user info
@@ -119,12 +94,184 @@ class Slack extends BaseController {
 
   public function incoming(Request $request) {
 
-    //
     Log::info(json_encode($request->all()));
 
-    return 'whee';
+    if($request->input('token') != env('SLACK_VERIFICATION_TOKEN'))
+      return response("invalid token\n", 403);
+
+    // Check if the team exists
+    $team = DB::table('slack_teams')->where('slack_teamid', $request->input('team_id'))->first();
+    if(!$team) {
+      return response()->json(['text' => 'Your team isn\'t signed up yet. Please visit <'.env('APP_URL').'> to register.']);
+    }
+
+    $org = DB::table('orgs')->where('id', $team->org_id)->first();
+
+    // If the Slack user ID doesn't exist, create them and add defaults
+    $slackuser = DB::table('slack_users')->where('slack_userid', $request->input('user_id'))->first();
+
+    $newUser = false;
+
+    if(!$slackuser) {
+      // Look up the user info for this slack user since they might already have an account in the org with the same email
+      $userInfo = $this->slackUserInfo($org->slack_token, $request->input('user_id'));
+      if($userInfo) {
+
+        // Create the new user account or look up existing
+        list($userID, $newUser) = $this->getOrCreateUser($org->id, $userInfo);
+
+        // Add the slack user record linked to the user account
+        $slackuserID = $this->createSlackUser($userID, $request->input('user_id'));
+      } else {
+        return response()->json(['text' => 'There was a problem looking up your account info.']);
+      }
+    } else {
+      $userID = $slackuser->user_id;
+    }
+
+    $groupWasCreated = false;
+
+    // Check if there is a group associated with this slack channel
+    $channel = DB::table('slack_channels')->where('org_id', $org->id)->where('slack_channelid', $request->input('channel_id'))->first();
+    if($channel) {
+      $groupID = $channel->group_id;
+      // add a "following" record for this user if it's not there yet
+      $following = DB::table('following')->where('group_id', $channel->group_id)->where('user_id', $userID)->first();
+      if(!$following) {
+        DB::table('following')->insert([
+          'user_id' => $userID,
+          'group_id' => $channel->group_id,
+          'frequency' => 'daily',
+          'daily_localtime' => 21,
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+      }
+    } else {
+      // Existing users posting in a new channel create a new group
+      if($newUser == false) {
+        $groupID = DB::table('groups')->insertGetId([
+          'org_id' => $org->id,
+          'shortname' => $request->input('channel_name'),
+          'created_at' => date('Y-m-d H:i:s'),
+          'created_by' => $userID
+        ]);
+        DB::table('slack_channels')->insertGetId([
+          'slack_team_id' => $team->id,
+          'slack_channelid' => $request->input('channel_id'),
+          'slack_channelname' => $request->input('channel_name'),
+          'org_id' => $org->id,
+          'group_id' => $groupID,
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+        $following = false;
+        DB::table('following')->insert([
+          'user_id' => $userID,
+          'group_id' => $groupID,
+          'frequency' => 'daily',
+          'daily_localtime' => 21,
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+        $groupWasCreated = true;
+      } else {
+        $groupID = null;
+      }
+    }
+
+    if($groupID) {
+      $group = DB::table('groups')->where('id', $groupID)->first();
+    } else {
+      $group = null;
+    }
+
+    // Add the entry
+    DB::table('entries')->insert([
+      'org_id' => $org->id,
+      'user_id' => $userID,
+      'group_id' => $groupID,
+      'created_at' => date('Y-m-d H:i:s'),
+      'command' => str_replace('/','',$request->input('command')),
+      'text' => $request->input('text'),
+      'slack_userid' => $request->input('user_id'),
+      'slack_username' => $request->input('user_name'),
+      'slack_channelid' => $request->input('channel_id'),
+      'slack_channelname' => $request->input('channel_name'),
+    ]);
+
+    if($newUser) {
+      $msg = 'Welcome! Looks like this is your first time using Done Reports.';
+      $this->replyViaSlack($request->input('response_url'), $msg);
+    }
+
+    if($groupWasCreated) {
+      $msg = 'This was the first message posted in #'.$request->input('channel_name').' so I created a new Done Reports group for you!';
+      $this->replyViaSlack($request->input('response_url'), $msg);
+    } else {
+      if($group && !$following) {
+        $msg = 'Since this is your first time posting here, you are now following the "'.$group->shortname.'" group.';
+        $this->replyViaSlack($request->input('response_url'), $msg);
+      }
+    }
+
+    $reply = 'Thanks, '.$request->input('user_name').'!';
+    if($group) {
+      $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
+    }
+    return response()->json(['text'=>$reply, 'response_type' => 'in_channel']);
   }
 
+  private function slackUserInfo($token, $userID) {
+    $client = new GuzzleHttp\Client();
+    $res = $client->request('GET', 'https://slack.com/api/users.info', [
+      'query' => [
+        'token' => $token,
+        'user' => $userID
+      ]
+    ]);
+    Log::info("users.info: ".$res->getBody());
+    $userInfo = json_decode($res->getBody());
+    if($userInfo && $userInfo->ok) {
+      return $userInfo;
+    } else {
+      return false;
+    }
+  }
 
+  private function getOrCreateUser($orgID, $userInfo) {
+    // Check if there is already a user account for the email on this slack user
+    $user = DB::table('users')
+      ->where('org_id', $orgID)
+      ->where('email', $userInfo->user->profile->email)
+      ->first();
+    if($user) {
+      $userID = $user->id;
+      $new = false;
+    } else {
+      $userID = DB::table('users')->insertGetId([
+        'org_id' => $orgID,
+        'username' => $userInfo->user->name,
+        'email' => $userInfo->user->profile->email,
+        'display_name' => $userInfo->user->profile->real_name,
+        'photo_url' => $userInfo->user->profile->image_512,
+        'timezone' => $userInfo->user->tz,
+        'tz_offset' => $userInfo->user->tz_offset,
+        'created_at' => date('Y-m-d H:i:s')
+      ]);
+      $new = true;
+    }
+    return [$userID, $new];
+  }
+
+  private function createSlackUser($userID, $slackUserID) {
+    return DB::table('slack_users')->insertGetId([
+      'slack_userid' => $slackUserID,
+      'user_id' => $userID,
+      'created_at' => date('Y-m-d H:i:s')
+    ]);
+  }
+
+  private function replyViaSlack($url, $text) {
+    $job = (new ReplyViaSlack($url, $text))->onQueue(env('QUEUE_NAME'));
+    $this->dispatch($job);
+  }
 
 }
