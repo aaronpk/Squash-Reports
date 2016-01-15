@@ -9,7 +9,7 @@
 
     <header class="ui fixed inverted main menu">
       <div class="ui container">
-        <a href="javascript:open_nav();" class="icon item show_on_mobile"><i class="content icon"></i></a>
+        <a href="javascript:open_nav();" class="icon item collapse-icon"><i class="content icon"></i></a>
         <a href="/" class="item">
           <img class="logo" src="/assets/compass.svg">
           <span style="padding-left: 0.7em;">Done!</span>
@@ -26,17 +26,14 @@
 
     <div id="page">
       <div id="page_contents">
-        <nav class="col span_1_of_4"><div class="in">
+        <nav>
           @section('sidebar')
-            This is the master sidebar.
           @show
-        </div></nav>
-
-        <div id="content" class="col span_3_of_4"><div class="in">
+        </nav>
+        <div id="content">
           @yield('content')
-        </div></div>
+        </div>
       </div>
-
     </div>
 
     <script src="/semantic-ui/semantic.min.js"></script>

@@ -1,60 +1,40 @@
+/**
+ * Slide-out sidebar css
+ */
 body {
   margin: 0;
-}
-
-#page {
-  top: 0;
-  left: 0;
-  bottom: 0;
-  right: 0;
+  background-color: #f9f9f9;
 }
 
 #page_contents {
-  padding: 5.5rem 0;
+  padding: 4.5rem 1rem 1rem 1rem;
+  height: 100vh;
   margin: 0 auto;
-  width: 64pc;
+  max-width: 64pc;
+  display: flex;
+  align-items: stretch;
 }
 
 nav {
-  background-color: #ffffee;
+  flex-basis: 240px;
+  flex-grow: 0;
 }
+
 #content {
-  background-color: #ffeeff;
-}
-.in {
-  padding: 10px;
+  flex-grow: 1;
 }
 
-.col {
-  display: block;
-  float: left;
-  margin: 0 0 2%;
-  padding-right: 2%;
-}
-
-.span_1_of_4 {
-  width: 23.8%;
-}
-
-.span_3_of_4 {
-  width: 74.6%;
-}
-
-.show_on_mobile {
+.collapse-icon {
   display: none!important;
 }
 
 @media only screen and (max-width: 767px) {
-  .show_on_mobile {
+  .collapse-icon {
     display: inherit!important;
   }
-  .col {
-    margin: 0 0 2%;
-    width: 100%!important;
-  }
-  nav.col {
-    width: 260px!important;
-    transform: translate3d(-260px,0,0);
+  nav {
+    width: 240px!important;
+    transform: translate3d(-240px,0,0);
     position: fixed;
     top: 0;
     left: 0;
@@ -64,9 +44,23 @@ nav {
 }
 
 .nav_open #page, .nav_open header {
-  transform: translate3d(280px,0,0);
+  transform: translate3d(260px,0,0);
 }
 .nav_open #page, .nav_open header,
 #page, header {
   transition: transform .15s cubic-bezier(.2,.3,.25,.9);
+}
+
+/* ************************** */
+
+.ui.vertical.menu .menu .item {
+  font-size: 1em;
+}
+
+.card {
+  border-radius: 0.25rem;
+  /*background: #fff;*/
+  border: 1px solid #e8e8e8;
+  box-shadow: 0 1px 0 rgba(0,0,0,.25);
+  padding: 1rem;
 }
