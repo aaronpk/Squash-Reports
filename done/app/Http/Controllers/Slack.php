@@ -217,7 +217,10 @@ class Slack extends BaseController {
     if($group) {
       $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
     }
-    return response()->json(['text'=>$reply, 'response_type' => 'in_channel']);
+
+    $this->replyViaSlack($request->input('response_url'), $reply, ['response_type' => 'ephemeral']);
+
+    return response()->json(['response_type' => 'in_channel']);
   }
 
   private function slackUserInfo($token, $userID) {
