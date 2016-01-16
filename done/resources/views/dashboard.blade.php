@@ -12,15 +12,17 @@
     <div class="item">
       <div class="header">My Groups</div>
       <div class="menu">
-        <a class="item">#geotriggers</a>
-        <a class="item">#developers</a>
+        @foreach($my_groups as $g)
+          <a class="item" href="/group/{{ $g->id }}">#{{ $g->shortname }}</a>
+        @endforeach
       </div>
     </div>
     <div class="item">
       <div class="header">More Groups</div>
       <div class="menu">
-        <a class="item">#opendata</a>
-        <a class="item">#blah</a>
+        @foreach($other_groups as $g)
+          <a class="item" href="/group/{{ $g->id }}">#{{ $g->shortname }}</a>
+        @endforeach
       </div>
     </div>
   </div>

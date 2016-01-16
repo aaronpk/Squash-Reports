@@ -59,7 +59,7 @@ nav {
 
 .card {
   border-radius: 0.25rem;
-  /*background: #fff;*/
+  background: #fff;
   border: 1px solid #e8e8e8;
   box-shadow: 0 1px 0 rgba(0,0,0,.25);
   padding: 1rem;

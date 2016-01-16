@@ -7,6 +7,8 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use DB;
+use Auth;
 
 class Controller extends BaseController
 {
@@ -17,6 +19,21 @@ class Controller extends BaseController
     }
 
     public function dashboard(Request $request) {
-      return view('dashboard');
+      $user = Auth::user();
+
+      $groups = DB::table('groups')->where('org_id', $user->org_id)->get();
+      $following = DB::table('following')->where('user_id', $user->id)->lists('group_id');
+
+      $my_groups = array_filter($groups, function($g) use($following) {
+        return in_array($g->id, $following);
+      });
+      $other_groups = array_filter($groups, function($g) use($following) {
+        return !in_array($g->id, $following);
+      });
+
+      return view('dashboard', [
+        'my_groups' => $my_groups,
+        'other_groups' => $other_groups
+      ]);
     }
 }

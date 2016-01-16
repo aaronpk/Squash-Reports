@@ -4,8 +4,9 @@
     <link rel="stylesheet" type="text/css" href="/semantic-ui/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/styles.css">
     <script src="/assets/jquery-2.2.0.min.js"></script>
+    <script src="/assets/script.js"></script>
   </head>
-  <body class="">
+  <body>
 
     <header class="ui fixed inverted main menu">
       <div class="ui container">
@@ -37,10 +38,5 @@
     </div>
 
     <script src="/semantic-ui/semantic.min.js"></script>
-    <script>
-    function open_nav() {
-      $("body").toggleClass("nav_open");
-    }
-    </script>
   </body>
 </html>
