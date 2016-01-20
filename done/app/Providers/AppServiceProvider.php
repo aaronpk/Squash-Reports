@@ -20,6 +20,13 @@ class AppServiceProvider extends ServiceProvider
           $date->setTimeZone(new DateTimeZone($entry->timezone));
           echo $date->format(\'M j g:ia\'); ?>';
       });
+
+      Blade::directive('entrytime', function($entry) {
+        return '<?php
+          $date = new DateTime($entry->created_at);
+          $date->setTimeZone(new DateTimeZone($entry->timezone));
+          echo $date->format(\'g:ia\'); ?>';
+      });
     }
 
     /**

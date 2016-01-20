@@ -53,6 +53,12 @@ nav {
 
 /* ************************** */
 
+.profile-photo {
+  width: 48px;
+  border-radius: 4px;
+}
+
+
 #profile {
   background: #f5f8fa;
 }
@@ -81,7 +87,7 @@ nav {
   width: 240px;
   flex-grow: 0;
 }
-#profile_feed {
+#profile_feed, #group_entries {
   flex-basis: 400px;
   flex-grow: 3;
 }
@@ -168,6 +174,7 @@ ul.entry-list {
 
 .entry .header {
   display: flex;
+  align-items: center;
 }
 .entry .header .left {
   flex-basis: 56px;
@@ -189,18 +196,13 @@ ul.entry-list {
   text-decoration: underline;
 }
 
-.entry .header img {
-  width: 48px;
-  border: 1px #aaa solid;
-  border-radius: 4px;
-}
 
 .entry .content {
   padding: 5px 0 10px 0;
   font-size: 1.5em;
   line-height: 1.8em;
 }
-.entry .content .command {
+.entry .content .command, .entry-compact .content .command {
   color: #888;
 }
 
@@ -240,10 +242,94 @@ ul.group_subscribers li {
   margin-right: 4px;
 }
 
-ul.group_subscribers li img {
-  border-radius: 4px;
-  width: 48px;
+#group_entries .user-list {
+  margin: 0;
+  padding: 0;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.2);
 }
+
+.user-list .nav {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px #ddd solid;
+}
+.user-list .nav .link {
+  flex-grow: 1;
+  flex-basis: 80px;
+  padding: 10px;
+}
+.user-list .nav .link a {
+  font-weight: bold;
+  font-size: 2em;
+  line-height: normal;
+}
+.user-list .nav .right {
+  text-align: right;
+}
+.user-list .nav .date {
+  flex-grow: 10;
+  text-align: center;
+  font-size: 1.4em;
+}
+
+#group_entries .user {
+  border-bottom: 1px #ddd solid;
+  margin-bottom: 0;
+  padding: 1em 1em 0.5em 1em;
+}
+#group_entries .user:last-child {
+  border: 0;
+}
+
+.user .header {
+  display: flex;
+  align-items: center;
+}
+.user .header .left {
+  flex-basis: 56px;
+  flex-grow: 0;
+}
+.user .header .right {
+  flex-grow: 1;
+}
+.user .header .right .author .nickname {
+  font-size: 1.5em;
+  line-height: 1.5em;
+}
+
+
+ul.entry-list-compact {
+  list-style-type: none;
+  margin: 0 0 10px 0;
+  padding: 0;
+}
+
+.entry-compact {
+  padding-top: 10px;
+}
+.entry-compact .content {
+  padding: 5px 0 5px 0;
+  font-size: 1.3em;
+}
+
+.entry-compact .footer-actions {
+  margin: 0;
+  padding: 3px 0;
+}
+.entry-compact .footer-actions .action {
+  margin-right: 1em;
+  color: #888;
+}
+.entry-compact .footer-actions .action a {
+  text-decoration: none;
+  color: #888;
+}
+.entry-compact .footer-actions .action a:hover {
+  color: #d83;
+}
+
 
 /* ************************** */
 

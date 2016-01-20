@@ -32,9 +32,9 @@
       <div id="profile_feed">
 
         <ul class="entry-list">
-        @foreach($entries as $entry)
-          @include('components/entry')
-        @endforeach
+          @foreach($entries as $entry)
+            @include('components/entry')
+          @endforeach
         </ul>
 
       </div>

@@ -130,16 +130,18 @@ class Slack extends BaseController {
       $userID = $slackuser->user_id;
     }
 
+    $user = DB::table('users')->where('id', $userID)->first();
+
     $groupWasCreated = false;
 
     // Check if there is a group associated with this slack channel
     $channel = DB::table('slack_channels')->where('org_id', $org->id)->where('slack_channelid', $request->input('channel_id'))->first();
     if($channel) {
       $groupID = $channel->group_id;
-      // add a "following" record for this user if it's not there yet
-      $following = DB::table('following')->where('group_id', $channel->group_id)->where('user_id', $userID)->first();
-      if(!$following) {
-        DB::table('following')->insert([
+      // add a "subscription" record for this user if it's not there yet
+      $subscription = DB::table('subscriptions')->where('group_id', $channel->group_id)->where('user_id', $userID)->first();
+      if(!$subscription) {
+        DB::table('subscriptions')->insert([
           'user_id' => $userID,
           'group_id' => $channel->group_id,
           'frequency' => 'daily',
@@ -152,9 +154,11 @@ class Slack extends BaseController {
       if($newUser == false) {
         $groupID = DB::table('groups')->insertGetId([
           'org_id' => $org->id,
-          'shortname' => $request->input('channel_name'),
+          'shortname' => ($request->input('channel_name') == 'general' ? $org->name : $request->input('channel_name')),
           'created_at' => date('Y-m-d H:i:s'),
-          'created_by' => $userID
+          'created_by' => $userID,
+          'timezone' => $user->timezone,
+          'tz_offset' => $user->tz_offset
         ]);
         DB::table('slack_channels')->insertGetId([
           'slack_team_id' => $team->id,
@@ -164,8 +168,8 @@ class Slack extends BaseController {
           'group_id' => $groupID,
           'created_at' => date('Y-m-d H:i:s')
         ]);
-        $following = false;
-        DB::table('following')->insert([
+        $subscription = false;
+        DB::table('subscriptions')->insert([
           'user_id' => $userID,
           'group_id' => $groupID,
           'frequency' => 'daily',
@@ -207,8 +211,8 @@ class Slack extends BaseController {
       $msg = 'This was the first message posted in #'.$request->input('channel_name').' so I created a new Done Reports group for you!';
       $this->replyViaSlack($request->input('response_url'), $msg);
     } else {
-      if($group && !$following) {
-        $msg = 'Since this is your first time posting here, you are now following the "'.$group->shortname.'" group.';
+      if($group && !$subscription) {
+        $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
         $this->replyViaSlack($request->input('response_url'), $msg);
       }
     }

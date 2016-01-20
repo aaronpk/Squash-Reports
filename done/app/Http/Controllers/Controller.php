@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use DB;
 use Auth;
+use DateTime, DateTimeZone;
 
 class Controller extends BaseController
 {
@@ -91,10 +92,48 @@ class Controller extends BaseController
         ->orderBy('users.username', 'asc')
         ->get();
 
+      if($request->date) {
+        try {
+          $date = new DateTime($request->date, new DateTimeZone($group->timezone));
+        } catch(Exception $e) {
+          return 'invalid date';
+        }
+      } else {
+        $date = new DateTime('now', new DateTimeZone($group->timezone));
+      }
+
+      $from = new DateTime($date->format('Y-m-d 00:00:00'), new DateTimeZone($group->timezone));
+      $from->setTimeZone(new DateTimeZone('UTC'));
+      $to = new DateTime($date->format('Y-m-d 23:59:59'), new DateTimeZone($group->timezone));
+      $to->setTimeZone(new DateTimeZone('UTC'));
+
+      $entries = DB::table('entries')
+        ->select('entries.*', 'groups.timezone')
+        ->join('groups', 'entries.group_id','=','groups.id')
+        ->where('group_id', $group->id)
+        ->where('entries.created_at', '>=', $from->format('Y-m-d H:i:s'))
+        ->where('entries.created_at', '<=', $to->format('Y-m-d H:i:s'))
+        ->orderBy('entries.created_at', 'asc')
+        ->get();
+
+      $users = [];
+      foreach($entries as $e) {
+        if(!array_key_exists($e->user_id, $users)) {
+          $users[$e->user_id] = [
+            'user' => DB::table('users')->where('id', $e->user_id)->first(),
+            'entries' => []
+          ];
+        }
+
+        $users[$e->user_id]['entries'][] = $e;
+      }
+
       return view('group', [
         'org' => $org,
         'group' => $group,
+        'date' => $date,
         'subscribers' => $subscribers,
+        'users' => $users
       ]);
     }
 

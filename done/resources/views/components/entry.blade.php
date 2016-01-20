@@ -1,7 +1,7 @@
 <li class="h-entry entry">
   <div class="header">
     <div class="left">
-      <img src="{{ $entry->photo_url }}" class="u-photo" width="48">
+      <img src="{{ $entry->photo_url }}" class="u-photo profile-photo" width="48">
     </div>
     <div class="right">
       <div class="author p-author h-card">
