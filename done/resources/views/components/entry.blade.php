@@ -6,8 +6,8 @@
     <div class="right">
       <div class="author p-author h-card">
         <a href="/{{ $org->shortname }}/{{ $entry->username }}" class="u-url">
-          <span class="p-name">{{ $entry->display_name }}</span>
-          <span class="p-nickname">{{ '@'.$entry->username }}</span>
+          <span class="p-name name">{{ $entry->display_name }}</span>
+          <span class="p-nickname nickname">{{ '@'.$entry->username }}</span>
         </a>
       </div>
       <div class="group-date">
@@ -22,10 +22,12 @@
   <div class="content">
     <span class="command">/{{ $entry->command }}</span> {{ $entry->text }}
   </div>
+  <!--
   <div class="footer">
     <div class="footer-actions">
       <a class="action" href=""><i class="star icon"></i> Like</a>
       <a class="action" href=""><i class="reply icon"></i> Comment</a>
     </div>
   </div>
+  -->
 </li>

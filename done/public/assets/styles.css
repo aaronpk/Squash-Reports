@@ -84,9 +84,6 @@ nav {
 #profile_feed {
   flex-basis: 400px;
   flex-grow: 3;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.2);
 }
 
 #profile_photo {
@@ -103,6 +100,14 @@ nav {
 }
 #profile_bio {
   margin-top: 1pc;
+}
+
+#profile_bio h2 {
+  margin-bottom: 0;
+}
+#profile_bio h3 {
+  margin-top: 0;
+  color: #555;
 }
 
 #profile_bio .user_groups {
@@ -147,6 +152,9 @@ ul.entry-list {
   list-style-type: none;
   margin: 0;
   padding: 0;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.2);
 }
 
 .entry {
@@ -169,6 +177,9 @@ ul.entry-list {
   flex-grow: 1;
 }
 .entry .header .right .author a:hover {
+  text-decoration: none;
+}
+.entry .header .right .author a:hover .name {
   text-decoration: underline;
 }
 .entry .header .right .group-date, .entry .header .right .group-date a {

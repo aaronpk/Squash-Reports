@@ -12,7 +12,7 @@
         <div id="profile_bio">
           <h2>{{ $user->display_name ?: '@'.$user->username }}</h2>
           @if($user->display_name)
-            <h3>@{{ $user->username }}</h3>
+            <h3>{{ '@'.$user->username }}</h3>
           @endif
           @if($user->location)
             <div><i class="marker icon"></i> {{ $user->location }}</div>

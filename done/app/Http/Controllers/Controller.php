@@ -46,7 +46,12 @@ class Controller extends BaseController
     }
 
     public function user_profile(Request $request) {
-      list($user, $org) = self::logged_in();
+      list($who, $org) = self::logged_in();
+
+      $user = DB::table('users')->where('org_id', $who->org_id)->where('username', $request->username)->first();
+      if(!$user) {
+        return 'not found';
+      }
 
       $groups = DB::table('groups')->where('org_id', $user->org_id)->get();
       $following = DB::table('following')->where('user_id', $user->id)->lists('group_id');
@@ -59,7 +64,9 @@ class Controller extends BaseController
         ->select('entries.*', 'groups.shortname AS groupname', 'users.username', 'users.display_name', 'users.photo_url', 'users.timezone')
         ->join('groups', 'entries.group_id','=','groups.id')
         ->join('users', 'entries.user_id','=','users.id')
-        ->where('entries.user_id', $user->id)->limit(30)->get();
+        ->where('entries.user_id', $user->id)
+        ->orderBy('entries.created_at', 'desc')
+        ->limit(30)->get();
 
       return view('profile', [
         'org' => $org,
