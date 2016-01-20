@@ -31,7 +31,7 @@
       </div>
       <div id="profile_feed">
 
-        <ul>
+        <ul class="entry-list">
         @foreach($entries as $entry)
           @include('components/entry')
         @endforeach

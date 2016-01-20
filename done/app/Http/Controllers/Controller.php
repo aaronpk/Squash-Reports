@@ -55,7 +55,11 @@ class Controller extends BaseController
         return in_array($g->id, $following);
       });
 
-      $entries = DB::table('entries')->where('user_id', $user->id)->limit(30)->get();
+      $entries = DB::table('entries')
+        ->select('entries.*', 'groups.shortname AS groupname', 'users.username', 'users.display_name', 'users.photo_url', 'users.timezone')
+        ->join('groups', 'entries.group_id','=','groups.id')
+        ->join('users', 'entries.user_id','=','users.id')
+        ->where('entries.user_id', $user->id)->limit(30)->get();
 
       return view('profile', [
         'org' => $org,

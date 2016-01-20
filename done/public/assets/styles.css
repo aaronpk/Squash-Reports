@@ -120,6 +120,7 @@ nav {
     display: flex;
     align-content: stretch;
     margin-top: -20px;
+    margin-bottom: 10px;
   }
   #profile_photo {
     flex-grow: 1;
@@ -140,8 +141,71 @@ nav {
   }
 }
 
+/* ************************** */
 
+ul.entry-list {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
 
+.entry {
+  border-bottom: 1px #ddd solid;
+  margin-bottom: 0;
+  padding: 1em 1em 0.5em 1em;
+}
+.entry:last-child {
+  border: 0;
+}
+
+.entry .header {
+  display: flex;
+}
+.entry .header .left {
+  flex-basis: 56px;
+  flex-grow: 0;
+}
+.entry .header .right {
+  flex-grow: 1;
+}
+.entry .header .right .author a:hover {
+  text-decoration: underline;
+}
+.entry .header .right .group-date, .entry .header .right .group-date a {
+  color: #999;
+}
+.entry .header .right .group-date a:hover {
+  text-decoration: underline;
+}
+
+.entry .header img {
+  width: 48px;
+  border: 1px #aaa solid;
+  border-radius: 4px;
+}
+
+.entry .content {
+  padding: 5px 0 10px 0;
+  font-size: 1.5em;
+  line-height: 1.8em;
+}
+.entry .content .command {
+  color: #888;
+}
+
+.entry .footer-actions {
+  margin: 0;
+  padding: 6px 0;
+  border-top: 1px #eee solid;
+}
+.entry .footer-actions .action {
+  margin-right: 1em;
+  text-decoration: none;
+  color: #888;
+}
+.entry .footer-actions .action:hover {
+  color: #d83;
+}
 
 /* ************************** */
 

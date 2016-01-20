@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Blade;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -13,7 +14,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+      Blade::directive('entrydate', function($entry) {
+        return '<?php
+          $date = new DateTime($entry->created_at);
+          $date->setTimeZone(new DateTimeZone($entry->timezone));
+          echo $date->format(\'M j g:ia\'); ?>';
+      });
     }
 
     /**
