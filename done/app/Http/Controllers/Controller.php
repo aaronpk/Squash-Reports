@@ -36,4 +36,9 @@ class Controller extends BaseController
         'other_groups' => $other_groups
       ]);
     }
+
+    public function logout(Request $request) {
+      Auth::logout();
+      return redirect('/');
+    }
 }
