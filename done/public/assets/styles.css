@@ -220,6 +220,34 @@ ul.entry-list {
 
 /* ************************** */
 
+.subscribers {
+  margin-top: 20px;
+}
+.subscribers > span {
+  margin: 4px 0;
+  display: block;
+}
+
+ul.group_subscribers {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul.group_subscribers li {
+  float: left;
+  margin-bottom: 4px;
+  margin-right: 4px;
+}
+
+ul.group_subscribers li img {
+  border-radius: 4px;
+  width: 48px;
+}
+
+/* ************************** */
+
+
 .ui.vertical.menu .menu .item {
   font-size: 1em;
 }

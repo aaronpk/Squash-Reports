@@ -15,7 +15,7 @@
           <img class="logo" src="/assets/compass.svg">
           <span style="padding-left: 0.7em;">Done!</span>
         </a>
-        <a href="/{{ $org->shortname }}/{{ $user->username }}" class="item">Your Profile</a>
+        <a href="/{{ $org->shortname }}/{{ Auth::user()->username }}" class="item">Your Profile</a>
         <div class="ui simple dropdown item right">
           Settings <i class="dropdown icon"></i>
           <div class="menu">
