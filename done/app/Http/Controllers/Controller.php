@@ -18,8 +18,14 @@ class Controller extends BaseController
       return view('index');
     }
 
-    public function dashboard(Request $request) {
+    public static function logged_in() {
       $user = Auth::user();
+      $org = DB::table('orgs')->where('id', $user->org_id)->first();
+      return [$user, $org];
+    }
+
+    public function dashboard(Request $request) {
+      list($user, $org) = self::logged_in();
 
       $groups = DB::table('groups')->where('org_id', $user->org_id)->get();
       $following = DB::table('following')->where('user_id', $user->id)->lists('group_id');
@@ -32,8 +38,27 @@ class Controller extends BaseController
       });
 
       return view('dashboard', [
+        'org' => $org,
+        'user' => $user,
         'my_groups' => $my_groups,
         'other_groups' => $other_groups
+      ]);
+    }
+
+    public function user_profile(Request $request) {
+      list($user, $org) = self::logged_in();
+
+      $groups = DB::table('groups')->where('org_id', $user->org_id)->get();
+      $following = DB::table('following')->where('user_id', $user->id)->lists('group_id');
+
+      $my_groups = array_filter($groups, function($g) use($following) {
+        return in_array($g->id, $following);
+      });
+
+      return view('profile', [
+        'org' => $org,
+        'user' => $user,
+        'my_groups' => $my_groups,
       ]);
     }
 

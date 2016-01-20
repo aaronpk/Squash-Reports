@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.dashboard')
 
 @section('sidebar')
   @parent
@@ -28,7 +28,7 @@
   </div>
 @endsection
 
-@section('content')
+@section('main')
   <div class="card">
     <h2>Hello World</h2>
     <p>Welcome to ZOMBOCOM</p>
