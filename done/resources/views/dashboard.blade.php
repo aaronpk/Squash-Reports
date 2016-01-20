@@ -13,7 +13,7 @@
       <div class="header">My Groups</div>
       <div class="menu">
         @foreach($my_groups as $g)
-          <a class="item" href="/group/{{ $g->id }}">#{{ $g->shortname }}</a>
+          <li><a href="/{{ $org->shortname }}/group/{{ $g->shortname }}">#{{ $g->shortname }}</a></li>
         @endforeach
       </div>
     </div>
@@ -21,7 +21,7 @@
       <div class="header">More Groups</div>
       <div class="menu">
         @foreach($other_groups as $g)
-          <a class="item" href="/group/{{ $g->id }}">#{{ $g->shortname }}</a>
+          <li><a href="/{{ $org->shortname }}/group/{{ $g->shortname }}">#{{ $g->shortname }}</a></li>
         @endforeach
       </div>
     </div>

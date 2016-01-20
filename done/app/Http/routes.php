@@ -11,6 +11,8 @@ Route::group(['middleware' => ['web']], function () {
 
 Route::group(['middleware' => ['web','auth']], function () {
   Route::get('/dashboard', 'Controller@dashboard');
+  Route::get('/profile', 'Controller@edit_profile');
+  Route::get('/{org}/group/{group}', 'Controller@group_profile');
   Route::get('/{org}/{username}', 'Controller@user_profile');
-  Route::get('/{username}/{username}/{group}', 'Controller@user_profile_group');
+  Route::get('/{org}/{username}/{group}', 'Controller@user_profile_group');
 });

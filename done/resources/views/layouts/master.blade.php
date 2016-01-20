@@ -17,8 +17,9 @@
         </a>
         <a href="/{{ $org->shortname }}/{{ $user->username }}" class="item">Your Profile</a>
         <div class="ui simple dropdown item right">
-          <i class="settings icon" style="width: 80px"></i> <i class="dropdown icon"></i>
+          Settings <i class="dropdown icon"></i>
           <div class="menu">
+            <a class="item" href="/profile">Edit Profile</a>
             <a class="item" href="/auth/logout">Sign Out</a>
           </div>
         </div>

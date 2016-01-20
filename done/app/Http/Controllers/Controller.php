@@ -55,10 +55,13 @@ class Controller extends BaseController
         return in_array($g->id, $following);
       });
 
+      $entries = DB::table('entries')->where('user_id', $user->id)->limit(30)->get();
+
       return view('profile', [
         'org' => $org,
         'user' => $user,
         'my_groups' => $my_groups,
+        'entries' => $entries
       ]);
     }
 

@@ -10,7 +10,10 @@
       <div id="profile_info">
         <div id="profile_photo"><img src="{{ $user->photo_url }}"></div>
         <div id="profile_bio">
-          <h2>{{ $user->display_name ?: $user->username }}</h2>
+          <h2>{{ $user->display_name ?: '@'.$user->username }}</h2>
+          @if($user->display_name)
+            <h3>@{{ $user->username }}</h3>
+          @endif
           @if($user->location)
             <div><i class="marker icon"></i> {{ $user->location }}</div>
           @endif
@@ -21,14 +24,18 @@
 
           <ul class="user_groups">
           @foreach($my_groups as $g)
-            <li><a href="/group/{{ $g->id }}">#{{ $g->shortname }}</a></li>
+            <li><a href="/{{ $org->shortname }}/group/{{ $g->shortname }}">#{{ $g->shortname }}</a></li>
           @endforeach
           </ul>
-
-
         </div>
       </div>
       <div id="profile_feed">
+
+        <ul>
+        @foreach($entries as $entry)
+          @include('components/entry')
+        @endforeach
+        </ul>
 
       </div>
     </div>
