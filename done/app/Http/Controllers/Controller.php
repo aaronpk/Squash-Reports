@@ -99,7 +99,17 @@ class Controller extends BaseController
           return 'invalid date';
         }
       } else {
-        $date = new DateTime('now', new DateTimeZone($group->timezone));
+        $latestEntry = DB::table('entries')
+          ->where('group_id', $group->id)
+          ->orderBy('created_at', 'desc')
+          ->limit(1)
+          ->first();
+        if($latestEntry) {
+          $date = new DateTime($latestEntry->created_at);
+          $date->setTimeZone(new DateTimeZone($group->timezone));
+        } else {
+          $date = new DateTime('now', new DateTimeZone($group->timezone));
+        }
       }
 
       $from = new DateTime($date->format('Y-m-d 00:00:00'), new DateTimeZone($group->timezone));
