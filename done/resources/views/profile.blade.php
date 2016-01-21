@@ -2,8 +2,7 @@
 
 @section('content')
 <div id="profile">
-  <div id="cover_photo">
-  </div>
+  <div id="cover_photo" {!! $user->cover_photo ? 'style="background-image:url('.$user->cover_photo.')"' : 'class="none"' !!}></div>
   <div id="profile_contents">
 
     <div id="profile_text">

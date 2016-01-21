@@ -71,12 +71,15 @@ nav {
 }
 
 #cover_photo {
-  background: url(/photos/city-landmark-lights-night.jpg);
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
   height: 20pc;
   width: 100%;
+}
+#cover_photo.none {
+  height: 10pc;
+  background-color: #e27737;
 }
 #profile_text {
   width: 100%;
