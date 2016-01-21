@@ -175,6 +175,27 @@ class Controller extends BaseController
       ]);
     }
 
+    public function entry(Request $request) {
+      list($who, $org) = self::logged_in();
+
+      $entry = DB::table('entries')
+        ->select('entries.*', 'groups.shortname AS groupname', 'users.username', 'users.display_name', 'users.photo_url', 'users.timezone')
+        ->join('groups', 'entries.group_id','=','groups.id')
+        ->join('users', 'entries.user_id','=','users.id')
+        ->where('entries.org_id', $who->org_id)
+        ->where('entries.id', $request->entry_id)
+        ->first();
+      if(!$entry) {
+        return 'not found';
+      }
+
+      return view('entry-permalink', [
+        'org' => $org,
+        'user' => $who,
+        'entry' => $entry
+      ]);
+    }
+
     public function logout(Request $request) {
       Auth::logout();
       return redirect('/');

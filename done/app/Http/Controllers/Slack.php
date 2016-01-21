@@ -154,7 +154,7 @@ class Slack extends BaseController {
       if($newUser == false) {
         $groupID = DB::table('groups')->insertGetId([
           'org_id' => $org->id,
-          'shortname' => ($request->input('channel_name') == 'general' ? $org->name : $request->input('channel_name')),
+          'shortname' => ($request->input('channel_name') == 'general' ? $org->shortname : $request->input('channel_name')),
           'created_at' => date('Y-m-d H:i:s'),
           'created_by' => $userID,
           'timezone' => $user->timezone,

@@ -351,6 +351,14 @@ ul.entry-list-compact {
   color: #d83;
 }
 
+/* ************************** */
+
+#entry_permalink {
+  max-width: 40pc;
+  margin: 0 auto;
+  margin-top: 72px;
+}
+
 
 /* ************************** */
 
