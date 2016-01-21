@@ -320,12 +320,12 @@ ul.entry-list-compact {
 }
 
 .entry-compact .timestamp {
-  display: none;
+  opacity: 0;
   float: right;
   padding-right: 1em;
 }
 .entry-compact:hover .timestamp {
-  display: block;
+  opacity: 1;
 }
 .entry-compact a.timestamp {
   color: #888;
@@ -356,6 +356,10 @@ ul.entry-list-compact {
 
 .entry .content .text, .entry-compact .content .text {
   white-space: pre-wrap;
+}
+.entry .content .emojichar, .entry-compact .content .emojichar {
+  height: 1.2em;
+  vertical-align: text-top;
 }
 
 .entry blockquote, .entry-compact blockquote {

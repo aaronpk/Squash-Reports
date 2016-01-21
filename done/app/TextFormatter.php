@@ -38,6 +38,20 @@ class TextFormatter {
         return '<a href="'.$url.'">'.$url.'</a>';
       }, $text);
 
+    // Match emoji
+    $text = preg_replace_callback('/:([a-z0-9_]+):/', function($matches) use($org) {
+      $emoji = DB::table('emoji')
+        ->whereIn('org_id', [0, $org->id])
+        ->where('shortname', $matches[1])
+        ->first();
+
+      if($emoji) {
+        return '<img src="/emoji/img-apple-64/'.$emoji->filename.'" alt="'.$matches[1].'" class="emojichar">';
+      } else {
+        return $matches[1];
+      }
+    }, $text);
+
     // Replace #hashtags if they match other group names
     $text = preg_replace_callback('/(?<=\s|^)#([a-z0-9_\-\.]+)/i', function($matches) use($org) {
       $channel = DB::table('slack_channels')

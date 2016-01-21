@@ -13,6 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        Commands\ImportEmoji::class,
         Commands\Inspire::class,
     ];
 
