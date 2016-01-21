@@ -51,7 +51,16 @@ class Controller extends BaseController
         ->join('subscriptions', 'entries.group_id', '=', 'subscriptions.group_id')
         ->where('subscriptions.user_id', $who->id)
         ->orderBy('entries.created_at', 'desc')
-        ->limit(20)->get();
+        ->limit(20);
+
+      if($request->search) {
+        $query = preg_replace('/[^a-z0-9_\-\.]/i', ' ', $request->search);
+        $entries = $entries->whereRaw('MATCH (text) AGAINST ("'.$query.'" IN BOOLEAN MODE)');
+      } else {
+        $query = '';
+      }
+
+      $entries = $entries->get();
 
       $likes = $this->collectUserLikesOfEntries($who, $entries);
 
@@ -61,7 +70,8 @@ class Controller extends BaseController
         'my_groups' => $my_groups,
         'other_groups' => $other_groups,
         'entries' => $entries,
-        'likes' => $likes
+        'likes' => $likes,
+        'search' => $query
       ]);
     }
 

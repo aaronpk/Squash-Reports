@@ -4,10 +4,12 @@
   @parent
   <div class="ui secondary vertical menu">
     <div class="item">
-      <div class="ui icon input">
-        <input type="text" placeholder="Search entries...">
-        <i class="search icon"></i>
-      </div>
+      <form action="/dashboard" method="get" class="ui form">
+        <div class="ui icon input">
+          <input type="text" placeholder="Search entries..." name="search" value="{{ $search }}">
+          <i class="search icon"></i>
+        </div>
+      </form>
     </div>
     <div class="item">
       <div class="header">My Groups</div>
