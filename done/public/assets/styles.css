@@ -315,6 +315,26 @@ ul.entry-list-compact {
   line-height: 1.5em;
 }
 
+.entry-compact:hover {
+  background: rgba(0,0,0,0.03);
+}
+
+.entry-compact .timestamp {
+  display: none;
+  float: right;
+  padding-right: 1em;
+}
+.entry-compact:hover .timestamp {
+  display: block;
+}
+.entry-compact a.timestamp {
+  color: #888;
+  font-size: 0.8em;
+}
+.entry-compact a.timestamp:hover {
+  color: #aaa;
+}
+
 .entry-compact .footer-actions {
   margin: 0;
   padding: 3px 0;
@@ -341,8 +361,9 @@ ul.entry-list-compact {
 .entry blockquote, .entry-compact blockquote {
   border-left: 4px #e3e4e6 solid;
   padding: 0;
-  padding-left: 1em;
+  padding-left: 10px;
   margin: 0;
+  margin-left: 4px;
 }
 
 .entry pre, .entry-compact pre {

@@ -1,6 +1,6 @@
 <li class="h-entry entry-compact">
   <div class="content">
-    <a href="/{{ $org->shortname }}/entry/{{ $entry->id }}" class="u-url">
+    <a href="/{{ $org->shortname }}/entry/{{ $entry->id }}" class="u-url timestamp">
       @entrytime($entry)
     </a>
     <span class="text"><span class="command">/{{ $entry->command }}</span> {!! App\TextFormatter::format($entry->text, $org) !!}</span>
