@@ -260,7 +260,7 @@ ul.group_subscribers li {
   flex-basis: 80px;
   padding: 10px;
 }
-.user-list .nav .link a {
+.user-list .nav .link .icon {
   font-weight: bold;
   font-size: 2em;
   line-height: normal;

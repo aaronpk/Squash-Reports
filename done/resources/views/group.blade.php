@@ -36,12 +36,16 @@
             <div class="link left">
               @if($previous)
                 <a href="/{{ $org->shortname }}/group/{{ $group->shortname }}/{{ $previous->format('Y-m-d') }}"><i class="caret left icon"></i></a>
+              @else
+                <span style="opacity:0"><i class="caret left icon"></i></span>
               @endif
             </div>
             <div class="date">{{ $date->format('F j, Y') }}</div>
             <div class="link right">
               @if($next)
                 <a href="/{{ $org->shortname }}/group/{{ $group->shortname }}/{{ $next->format('Y-m-d') }}"><i class="caret right icon"></i></a>
+              @else
+                <span style="opacity:0"><i class="caret right icon"></i></span>
               @endif
             </div>
           </div>
