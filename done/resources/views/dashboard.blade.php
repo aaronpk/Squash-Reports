@@ -6,8 +6,11 @@
 @endsection
 
 @section('main')
-  <div class="card">
-    <h2>Hello World</h2>
-    <p>Welcome to ZOMBOCOM</p>
-  </div>
+
+<ul class="entry-list">
+  @foreach($entries as $entry)
+    @include('components/entry')
+  @endforeach
+</ul>
+
 @endsection

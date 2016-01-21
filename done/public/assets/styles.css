@@ -160,6 +160,7 @@ nav {
 ul.entry-list {
   list-style-type: none;
   margin: 0;
+  margin-bottom: 2em;
   padding: 0;
   background: #fff;
   border-radius: 6px;
@@ -219,8 +220,14 @@ ul.entry-list {
   text-decoration: none;
   color: #888;
 }
+.entry .footer-actions .action.active {
+  color: #f08f2e;
+}
 .entry .footer-actions .action:hover {
   color: #d83;
+}
+.entry .footer-actions .action.active:hover {
+  color: #999;
 }
 
 /* ************************** */
@@ -322,36 +329,31 @@ ul.entry-list-compact {
   background: rgba(0,0,0,0.03);
 }
 
-.entry-compact .timestamp {
+.entry-compact .entry-actions {
   opacity: 0;
   float: right;
   padding-right: 1em;
 }
-.entry-compact:hover .timestamp {
+.entry-compact:hover .entry-actions {
   opacity: 1;
 }
-.entry-compact a.timestamp {
+.entry-compact .entry-actions a {
+  text-decoration: none;
   color: #888;
   font-size: 0.8em;
 }
-.entry-compact a.timestamp:hover {
+.entry-compact .entry-actions a.active {
+  color: #f08f2e;
+}
+.entry-compact .entry-actions a.active:hover {
+  color: #999;
+}
+.entry-compact .entry-actions a:hover {
   color: #aaa;
 }
-
-.entry-compact .footer-actions {
-  margin: 0;
-  padding: 3px 0;
-}
-.entry-compact .footer-actions .action {
+.entry-compact .entry-actions .action {
   margin-right: 1em;
   color: #888;
-}
-.entry-compact .footer-actions .action a {
-  text-decoration: none;
-  color: #888;
-}
-.entry-compact .footer-actions .action a:hover {
-  color: #d83;
 }
 
 /* ************************** */

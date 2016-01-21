@@ -24,12 +24,10 @@
   <div class="content">
     <span class="text"><span class="command">/{{ $entry->command }}</span> {!! App\TextFormatter::format($entry->text, $org) !!}</span>
   </div>
-  <!--
   <div class="footer">
     <div class="footer-actions">
-      <a class="action" href=""><i class="star icon"></i> Like</a>
-      <a class="action" href=""><i class="reply icon"></i> Comment</a>
+      <a class="action like-entry {{ in_array($entry->id, $likes) ? 'active' : '' }}" data-entry-id="{{ $entry->id }}" href=""><i class="star icon"></i> {!! $entry->num_likes > 0 ? '<span class="num">'.$entry->num_likes.'</span>' . ' Like'.($entry->num_likes == 1 ? '' : 's') : '<span class="num"></span> Like' !!}</a>
+      {{-- <a class="action" href=""><i class="reply icon"></i> Comment</a> --}}
     </div>
   </div>
-  -->
 </li>

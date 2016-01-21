@@ -44,11 +44,24 @@ class Controller extends BaseController
 
       list($my_groups, $other_groups) = self::load_user_groups($who);
 
+      $entries = DB::table('entries')
+        ->select('entries.*', 'groups.shortname AS groupname', 'users.username', 'users.display_name', 'users.photo_url', 'users.timezone')
+        ->join('groups', 'entries.group_id','=','groups.id')
+        ->join('users', 'entries.user_id','=','users.id')
+        ->join('subscriptions', 'entries.group_id', '=', 'subscriptions.group_id')
+        ->where('subscriptions.user_id', $who->id)
+        ->orderBy('entries.created_at', 'desc')
+        ->limit(20)->get();
+
+      $likes = $this->collectUserLikesOfEntries($who, $entries);
+
       return view('dashboard', [
         'org' => $org,
         'user' => $who,
         'my_groups' => $my_groups,
-        'other_groups' => $other_groups
+        'other_groups' => $other_groups,
+        'entries' => $entries,
+        'likes' => $likes
       ]);
     }
 
@@ -70,11 +83,14 @@ class Controller extends BaseController
         ->orderBy('entries.created_at', 'desc')
         ->limit(20)->get();
 
+      $likes = $this->collectUserLikesOfEntries($who, $entries);
+
       return view('profile', [
         'org' => $org,
         'user' => $user,
         'my_groups' => $my_groups,
-        'entries' => $entries
+        'entries' => $entries,
+        'likes' => $likes
       ]);
     }
 
@@ -164,6 +180,8 @@ class Controller extends BaseController
         $users[$e->user_id]['entries'][] = $e;
       }
 
+      $likes = $this->collectUserLikesOfEntries($who, $entries);
+
       return view('group', [
         'org' => $org,
         'group' => $group,
@@ -171,7 +189,8 @@ class Controller extends BaseController
         'subscribers' => $subscribers,
         'users' => $users,
         'previous' => $previous,
-        'next' => $next
+        'next' => $next,
+        'likes' => $likes
       ]);
     }
 
@@ -189,11 +208,87 @@ class Controller extends BaseController
         return 'not found';
       }
 
+      $likes = $this->collectUserLikesOfEntries($who, [$entry]);
+
       return view('entry-permalink', [
         'org' => $org,
         'user' => $who,
-        'entry' => $entry
+        'entry' => $entry,
+        'likes' => $likes
       ]);
+    }
+
+    public function like_entry(Request $request) {
+      list($who, $org) = self::logged_in();
+
+      $entry = DB::table('entries')
+        ->where('org_id', $org->id)
+        ->where('id', $request->entry_id)
+        ->first();
+
+      if(!$entry) {
+        return response()->json([
+          'error' => 'not found'
+        ]);
+      } else {
+
+        $like = DB::table('responses')
+          ->where('user_id', $who->id)
+          ->where('entry_id', $entry->id)
+          ->where('like', 1)
+          ->first();
+
+        if($like) {
+          DB::table('responses')
+            ->where('user_id', $who->id)
+            ->where('entry_id', $entry->id)
+            ->where('like', 1)
+            ->delete();
+          $state = '';
+        } else {
+          DB::table('responses')->insert([
+            'entry_id' => $entry->id,
+            'user_id' => $who->id,
+            'created_at' => date('Y-m-d H:i:s'),
+            'like' => 1
+          ]);
+          $state = 'active';
+        }
+
+        $likes = DB::table('responses')
+          ->where('entry_id', $entry->id)
+          ->where('like', 1)
+          ->count();
+
+        DB::table('entries')
+          ->where('id', $entry->id)
+          ->update([
+            'num_likes' => $likes
+          ]);
+
+        return response()->json([
+          'state' => $state,
+          'entry_id' => $entry->id,
+          'likes' => $likes
+        ]);
+      }
+    }
+
+    private function collectUserLikesOfEntries($who, $entries) {
+      $entryIDs = array_map(function($entry) {
+        return $entry->id;
+      }, $entries);
+
+      $likes = array_map(function($response){
+        return $response->entry_id;
+      }, DB::table('responses')
+        ->select('entry_id')
+        ->whereIn('entry_id', $entryIDs)
+        ->where('user_id', $who->id)
+        ->where('like', 1)
+        ->get());
+
+      return $likes;
     }
 
     public function logout(Request $request) {

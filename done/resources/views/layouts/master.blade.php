@@ -29,5 +29,6 @@
     @yield('content')
 
     <script src="/semantic-ui/semantic.min.js"></script>
+    <input type="hidden" id="csrf-token" value="{{ csrf_token() }}">
   </body>
 </html>

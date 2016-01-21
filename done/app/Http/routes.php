@@ -17,4 +17,5 @@ Route::group(['middleware' => ['web','auth']], function () {
   Route::get('/{org}/group/{group}/{date}', 'Controller@group_profile');
   Route::get('/{org}/{username}', 'Controller@user_profile');
   Route::get('/{org}/{username}/{group}', 'Controller@user_profile_group');
+  Route::post('/action/like-entry', 'Controller@like_entry');
 });
