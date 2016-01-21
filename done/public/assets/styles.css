@@ -200,7 +200,7 @@ ul.entry-list {
 .entry .content {
   padding: 5px 0 10px 0;
   font-size: 1.5em;
-  line-height: 1.8em;
+  line-height: 1.6em;
 }
 .entry .content .command, .entry-compact .content .command {
   color: #888;
@@ -307,11 +307,12 @@ ul.entry-list-compact {
 }
 
 .entry-compact {
-  padding-top: 10px;
+  padding-top: 1px;
 }
 .entry-compact .content {
   padding: 5px 0 5px 0;
   font-size: 1.3em;
+  line-height: 1.5em;
 }
 
 .entry-compact .footer-actions {
@@ -333,6 +334,38 @@ ul.entry-list-compact {
 
 /* ************************** */
 
+.entry .content .text, .entry-compact .content .text {
+  white-space: pre-wrap;
+}
+
+.entry blockquote, .entry-compact blockquote {
+  border-left: 4px #e3e4e6 solid;
+  padding: 0;
+  padding-left: 1em;
+  margin: 0;
+}
+
+.entry pre, .entry-compact pre {
+  display: block;
+  font-size: 0.75em;
+  line-height: 1.15em;
+  padding: .5em;
+  border: 1px solid rgba(0,0,0,.15);
+  border-radius: 3px;
+  background: #fbfaf8;
+  color: #333;
+  margin-bottom: 0;
+  margin-top: 4px;
+}
+
+.entry code, .entry-compact code {
+  font-size: 0.9em;
+  padding: 1px 3px;
+  border: 1px #e1e1e8 solid;
+  border-radius: 3px;
+  background: #f7f7f9;
+  color: #c25;
+}
 
 .ui.vertical.menu .menu .item {
   font-size: 1em;

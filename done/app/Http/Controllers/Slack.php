@@ -69,7 +69,7 @@ class Slack extends BaseController {
 
             // Check if there is already a user account for the email on this slack user
             list($userID, $new) = $this->getOrCreateUser($orgID, $userInfo);
-            $this->createSlackUser($userID, $auth->user_id);
+            $this->createSlackUser($userID, $auth->user_id, $auth->user, $orgID);
 
           } else {
             // Error getting user info
@@ -122,7 +122,7 @@ class Slack extends BaseController {
         list($userID, $newUser) = $this->getOrCreateUser($org->id, $userInfo);
 
         // Add the slack user record linked to the user account
-        $slackuserID = $this->createSlackUser($userID, $request->input('user_id'));
+        $slackuserID = $this->createSlackUser($userID, $request->input('user_id'), $userInfo->user->name, $org->id);
       } else {
         return response()->json(['text' => 'There was a problem looking up your account info.']);
       }
@@ -269,9 +269,11 @@ class Slack extends BaseController {
     return [$userID, $new];
   }
 
-  private function createSlackUser($userID, $slackUserID) {
+  private function createSlackUser($userID, $slackUserID, $slackUsername, $orgID) {
     return DB::table('slack_users')->insertGetId([
+      'org_id' => $orgID,
       'slack_userid' => $slackUserID,
+      'slack_username' => $slackUsername,
       'user_id' => $userID,
       'created_at' => date('Y-m-d H:i:s')
     ]);

@@ -3,7 +3,7 @@
     <a href="/{{ $org->shortname }}/entry/{{ $entry->id }}" class="u-url">
       @entrytime($entry)
     </a>
-    <span class="command">/{{ $entry->command }}</span> {{ $entry->text }}
+    <span class="text"><span class="command">/{{ $entry->command }}</span> {!! App\TextFormatter::format($entry->text, $org) !!}</span>
   </div>
   <!--
   <div class="footer">

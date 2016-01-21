@@ -20,7 +20,7 @@
     </div>
   </div>
   <div class="content">
-    <span class="command">/{{ $entry->command }}</span> {{ $entry->text }}
+    <span class="text"><span class="command">/{{ $entry->command }}</span> {!! App\TextFormatter::format($entry->text, $org) !!}</span>
   </div>
   <!--
   <div class="footer">
