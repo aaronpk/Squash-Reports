@@ -15,10 +15,10 @@
 
           <br>
 
-          <button class="ui primary button" style="width: 208px;">Subscribe</button>
+          <button class="ui button {{ $user_subscribed ? 'subscribed' : 'not-subscribed' }} subscribe-button" style="width: 208px;" data-group-id="{{ $group->id }}"></button>
 
           <div class="subscribers">
-            <span><i class="users icon"></i> {{ count($subscribers) }} Subscriber{{ count($subscribers) == 1 ? '' : 's' }}</span>
+            <span><i class="users icon"></i> <span id="num-subscribers">{{ count($subscribers) }}</span> Subscriber{{ count($subscribers) == 1 ? '' : 's' }}</span>
             <ul class="group_subscribers">
               @foreach($subscribers as $u)
                 <li><a href="/{{ $org->shortname }}/{{ $u->username }}"><img src="{{ $u->photo_url }}" class="profile-photo" width="48"></a></li>

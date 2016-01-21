@@ -26,7 +26,7 @@ class Controller extends BaseController
     }
 
     public static function load_user_groups($user) {
-      $groups = DB::table('groups')->where('org_id', $user->org_id)->get();
+      $groups = DB::table('groups')->where('org_id', $user->org_id)->orderBy('shortname','asc')->get();
       $subscriptions = DB::table('subscriptions')->where('user_id', $user->id)->lists('group_id');
 
       $my_groups = array_filter($groups, function($g) use($subscriptions) {
@@ -180,6 +180,10 @@ class Controller extends BaseController
         $users[$e->user_id]['entries'][] = $e;
       }
 
+      $subscribed = in_array($who->id, array_map(function($s){
+        return $s->user_id;
+      }, $subscribers));
+
       $likes = $this->collectUserLikesOfEntries($who, $entries);
 
       return view('group', [
@@ -190,7 +194,8 @@ class Controller extends BaseController
         'users' => $users,
         'previous' => $previous,
         'next' => $next,
-        'likes' => $likes
+        'likes' => $likes,
+        'user_subscribed' => $subscribed
       ]);
     }
 
@@ -272,6 +277,52 @@ class Controller extends BaseController
           'likes' => $likes
         ]);
       }
+    }
+
+    public function subscribe(Request $request) {
+      list($who, $org) = self::logged_in();
+
+      $group = DB::table('groups')
+        ->where('org_id', $org->id)
+        ->where('id', $request->group_id)
+        ->first();
+
+      if(!$group) {
+        return response()->json([
+          'error' => 'not found'
+        ]);
+      }
+
+      $subscription = DB::table('subscriptions')
+        ->where('group_id', $group->id)
+        ->where('user_id', $who->id)
+        ->first();
+      if(!$subscription) {
+        DB::table('subscriptions')->insert([
+          'group_id' => $group->id,
+          'user_id' => $who->id,
+          'frequency' => 'daily',
+          'daily_localtime' => 21,
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+        $state = 'subscribed';
+      } else {
+        DB::table('subscriptions')
+          ->where('group_id', $group->id)
+          ->where('user_id', $who->id)
+          ->delete();
+        $state = 'unsubscribed';
+      }
+
+      $num_subscribers = DB::table('subscriptions')
+        ->where('group_id', $group->id)
+        ->count();
+
+      return response()->json([
+        'state' => $state,
+        'group_id' => $group->id,
+        'num_subscribers' => $num_subscribers
+      ]);
     }
 
     private function collectUserLikesOfEntries($who, $entries) {

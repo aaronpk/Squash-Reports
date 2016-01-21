@@ -255,6 +255,24 @@ ul.group_subscribers li {
   margin-right: 4px;
 }
 
+.ui.button.not-subscribed:after {
+  content: 'Subscribe';
+}
+.ui.button.subscribed {
+  background-color: #1678c2;
+  color: #fff;
+  font-weight: normal;
+}
+.ui.button.subscribed:after {
+  content: 'Subscribed';
+}
+.ui.button.subscribed:hover {
+  background-color: #d01919;
+}
+.ui.button.subscribed:hover:after {
+  content: 'Unsubscribe';
+}
+
 #group_entries .user-list {
   margin: 0;
   padding: 0;
