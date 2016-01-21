@@ -33,9 +33,17 @@
 
         <div class="user-list">
           <div class="nav">
-            <div class="link left"><a href=""><i class="caret left icon"></i></a></div>
+            <div class="link left">
+              @if($previous)
+                <a href="/{{ $org->shortname }}/group/{{ $group->shortname }}/{{ $previous->format('Y-m-d') }}"><i class="caret left icon"></i></a>
+              @endif
+            </div>
             <div class="date">{{ $date->format('F j, Y') }}</div>
-            <div class="link right"><a href=""><i class="caret right icon"></i></a></div>
+            <div class="link right">
+              @if($next)
+                <a href="/{{ $org->shortname }}/group/{{ $group->shortname }}/{{ $next->format('Y-m-d') }}"><i class="caret right icon"></i></a>
+              @endif
+            </div>
           </div>
 
           @foreach($users as $user)

@@ -116,6 +116,32 @@ class Controller extends BaseController
         ->orderBy('entries.created_at', 'asc')
         ->get();
 
+      $previousEntry = DB::table('entries')
+        ->where('group_id', $group->id)
+        ->where('created_at', '<', $from->format('Y-m-d H:i:s'))
+        ->orderBy('created_at', 'desc')
+        ->limit(1)
+        ->first();
+      if($previousEntry) {
+        $previous = new DateTime($previousEntry->created_at);
+        $previous->setTimeZone(new DateTimeZone($group->timezone));
+      } else {
+        $previous = false;
+      }
+
+      $nextEntry = DB::table('entries')
+        ->where('group_id', $group->id)
+        ->where('created_at', '>', $to->format('Y-m-d H:i:s'))
+        ->orderBy('created_at', 'asc')
+        ->limit(1)
+        ->first();
+      if($nextEntry) {
+        $next = new DateTime($nextEntry->created_at);
+        $next->setTimeZone(new DateTimeZone($group->timezone));
+      } else {
+        $next = false;
+      }
+
       $users = [];
       foreach($entries as $e) {
         if(!array_key_exists($e->user_id, $users)) {
@@ -133,7 +159,9 @@ class Controller extends BaseController
         'group' => $group,
         'date' => $date,
         'subscribers' => $subscribers,
-        'users' => $users
+        'users' => $users,
+        'previous' => $previous,
+        'next' => $next
       ]);
     }
 
