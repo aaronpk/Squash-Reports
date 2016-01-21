@@ -1,7 +1,9 @@
 <li class="h-entry entry">
   <div class="header">
     <div class="left">
-      <img src="{{ $entry->photo_url }}" class="u-photo profile-photo" width="48">
+      <a href="/{{ $org->shortname }}/{{ $entry->username }}">
+        <img src="{{ $entry->photo_url }}" class="u-photo profile-photo" width="48">
+      </a>
     </div>
     <div class="right">
       <div class="author p-author h-card">

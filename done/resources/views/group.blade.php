@@ -54,7 +54,9 @@
             <div class="user">
               <div class="header">
                 <div class="left">
-                  <img src="{{ $user['user']->photo_url }}" class="u-photo profile-photo" width="48">
+                  <a href="/{{ $org->shortname }}/{{ $user['user']->username }}">
+                    <img src="{{ $user['user']->photo_url }}" class="u-photo profile-photo" width="48">
+                  </a>
                 </div>
                 <div class="right">
                   <div class="author p-author h-card">

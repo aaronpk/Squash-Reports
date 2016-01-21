@@ -68,7 +68,7 @@ class Controller extends BaseController
         ->join('users', 'entries.user_id','=','users.id')
         ->where('entries.user_id', $user->id)
         ->orderBy('entries.created_at', 'desc')
-        ->limit(30)->get();
+        ->limit(20)->get();
 
       return view('profile', [
         'org' => $org,
