@@ -119,11 +119,14 @@ nav {
   color: #555;
 }
 
-#profile_bio .user_groups {
+.group_list {
   margin: 0;
   padding: 0;
-  padding-left: 1.5em;
+  padding-left: 1.2em;
+  font-size: 1.5em;
+  line-height: 1.7em;
 }
+
 
 @media only screen and (max-width: 600px) {
   #profile_text {
@@ -333,6 +336,7 @@ ul.entry-list-compact {
   opacity: 0;
   float: right;
   padding-right: 1em;
+  font-size: 0.8em;
 }
 .entry-compact:hover .entry-actions {
   opacity: 1;
@@ -340,7 +344,6 @@ ul.entry-list-compact {
 .entry-compact .entry-actions a {
   text-decoration: none;
   color: #888;
-  font-size: 0.8em;
 }
 .entry-compact .entry-actions a.active {
   color: #f08f2e;

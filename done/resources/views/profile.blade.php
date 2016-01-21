@@ -21,7 +21,7 @@
           @endif
           <br>
 
-          <ul class="user_groups">
+          <ul class="group_list">
           @foreach($my_groups as $g)
             <li><a href="/{{ $org->shortname }}/group/{{ $g->shortname }}">#{{ $g->shortname }}</a></li>
           @endforeach
