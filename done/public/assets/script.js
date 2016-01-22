@@ -31,4 +31,25 @@ $(function(){
       $("#num-subscribers").text(response.num_subscribers);
     });
   });
+
+  // Timezone editing
+  $('.edit-timezone').popup({
+    popup: $('.timezone-popup'),
+    target: '.timezone-info div',
+    on: 'click'
+  });
+
+  $(".timezone-popup select").change(function(){
+    $(".edit-timezone").popup('hide');
+    $.post("/action/edit-timezone", {
+      timezone: $(".timezone-popup select").val(),
+      _token: $("#csrf-token").val()
+    }, function(response){
+      $(".timezone-info .timezone-name").text(response.timezone);
+    });
+  });
+
+  // enable dropdowns
+  $("select.dropdown").dropdown();
+
 });

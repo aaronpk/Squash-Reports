@@ -158,7 +158,6 @@ class Slack extends BaseController {
           'created_at' => date('Y-m-d H:i:s'),
           'created_by' => $userID,
           'timezone' => $user->timezone,
-          'tz_offset' => $user->tz_offset
         ]);
         DB::table('slack_channels')->insertGetId([
           'slack_team_id' => $team->id,
@@ -261,7 +260,6 @@ class Slack extends BaseController {
         'display_name' => $userInfo->user->profile->real_name,
         'photo_url' => $userInfo->user->profile->image_512,
         'timezone' => $userInfo->user->tz,
-        'tz_offset' => $userInfo->user->tz_offset,
         'created_at' => date('Y-m-d H:i:s')
       ]);
       $new = true;

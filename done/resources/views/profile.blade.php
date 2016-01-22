@@ -17,7 +17,22 @@
             <div><i class="marker icon"></i> {{ $user->location }}</div>
           @endif
           @if($user->timezone)
-            <div><i class="clock icon"></i> {{ $user->timezone }}</div>
+            <div class="timezone-info">
+              @if($user->id == $who->id)
+                <a href="#" class="edit-timezone" data-position="top center" style="float:right; margin-right: 1em;">Change</a>
+              @endif
+              <div><i class="clock icon"></i> <span class="timezone-name">{{ $user->timezone }}</span></div>
+            </div>
+            @if($user->id == $who->id)
+              <div class="ui special popup timezone-popup">
+                <select class="ui dropdown">
+                  <option value="">Timezone</option>
+                  @foreach($timezones as $timezone)
+                    <option value="{{ $timezone }}"{{ $user->timezone == $timezone ? ' selected="selected"' : '' }}>{{ $timezone }}</option>
+                  @endforeach
+                </select>
+              </div>
+            @endif
           @endif
           <br>
 

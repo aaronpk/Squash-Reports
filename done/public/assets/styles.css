@@ -119,6 +119,13 @@ nav {
   color: #555;
 }
 
+#profile_contents .timezone-info .edit-timezone {
+  display: none;
+}
+#profile_contents .timezone-info:hover .edit-timezone {
+  display: inline;
+}
+
 .group_list {
   margin: 0;
   padding: 0;

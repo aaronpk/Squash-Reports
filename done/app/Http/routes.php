@@ -11,12 +11,12 @@ Route::group(['middleware' => ['web']], function () {
 
 Route::group(['middleware' => ['web','auth']], function () {
   Route::get('/dashboard', 'Controller@dashboard');
-  Route::get('/profile', 'Controller@edit_profile');
   Route::get('/{org}/entry/{entry_id}', 'Controller@entry');
   Route::get('/{org}/group/{group}', 'Controller@group_profile');
   Route::get('/{org}/group/{group}/{date}', 'Controller@group_profile');
   Route::get('/{org}/{username}', 'Controller@user_profile');
   Route::get('/{org}/{username}/{group}', 'Controller@user_profile_group');
-  Route::post('/action/like-entry', 'Controller@like_entry');
-  Route::post('/action/subscribe', 'Controller@subscribe');
+  Route::post('/action/like-entry', 'Controller@like_entry_json');
+  Route::post('/action/subscribe', 'Controller@subscribe_json');
+  Route::post('/action/edit-timezone', 'Controller@edit_timezone_json');
 });

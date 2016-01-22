@@ -95,12 +95,16 @@ class Controller extends BaseController
 
       $likes = $this->collectUserLikesOfEntries($who, $entries);
 
+      $timezones = ["America/Los_Angeles", "America/Chicago", "America/New_York", "America/Phoenix", "Asia/Hong_Kong", "Europe/Berlin", "Europe/Dublin", "Europe/Amsterdam", "Europe/London", "Europe/Stockholm", "Europe/Zurich"];
+
       return view('profile', [
         'org' => $org,
         'user' => $user,
+        'who' => $who,
         'my_groups' => $my_groups,
         'entries' => $entries,
-        'likes' => $likes
+        'likes' => $likes,
+        'timezones' => $timezones
       ]);
     }
 
@@ -233,7 +237,7 @@ class Controller extends BaseController
       ]);
     }
 
-    public function like_entry(Request $request) {
+    public function like_entry_json(Request $request) {
       list($who, $org) = self::logged_in();
 
       $entry = DB::table('entries')
@@ -289,7 +293,7 @@ class Controller extends BaseController
       }
     }
 
-    public function subscribe(Request $request) {
+    public function subscribe_json(Request $request) {
       list($who, $org) = self::logged_in();
 
       $group = DB::table('groups')
@@ -332,6 +336,25 @@ class Controller extends BaseController
         'state' => $state,
         'group_id' => $group->id,
         'num_subscribers' => $num_subscribers
+      ]);
+    }
+
+    public function edit_timezone_json(Request $request) {
+      list($who, $org) = self::logged_in();
+
+      try {
+        $tz = new DateTimeZone($request->timezone);
+        $timezone = $request->timezone;
+      } catch(Exception $e) {
+        $timezone = $who->timezone;
+      }
+
+      DB::table('users')->where('id', $who->id)->update([
+        'timezone' => $timezone,
+      ]);
+
+      return response()->json([
+        'timezone' => $timezone
       ]);
     }
 
