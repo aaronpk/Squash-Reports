@@ -11,6 +11,7 @@ Route::group(['middleware' => ['web']], function () {
 
 Route::group(['middleware' => ['web','auth']], function () {
   Route::get('/dashboard', 'Controller@dashboard');
+  Route::get('/settings/cover-photo', 'Controller@select_cover_photo');
   Route::get('/{org}/entry/{entry_id}', 'Controller@entry');
   Route::get('/{org}/group/{group}', 'Controller@group_profile');
   Route::get('/{org}/group/{group}/{date}', 'Controller@group_profile');
@@ -19,4 +20,6 @@ Route::group(['middleware' => ['web','auth']], function () {
   Route::post('/action/like-entry', 'Controller@like_entry_json');
   Route::post('/action/subscribe', 'Controller@subscribe_json');
   Route::post('/action/edit-timezone', 'Controller@edit_timezone_json');
+  Route::post('/action/select-cover-photo', 'Controller@select_cover_photo_json');
+  # Route::post('/action/replace-cover-photo', 'Controller@replace_cover_photo');
 });

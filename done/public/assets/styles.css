@@ -81,6 +81,31 @@ nav {
   height: 10pc;
   background-color: #e27737;
 }
+
+#cover_photo .edit-cover {
+  height: 20pc;
+  max-width: 60pc;
+  margin: 0 auto;
+  position: relative;
+}
+#cover_photo.none .edit-cover {
+  height: 10pc;
+}
+
+#cover_photo .edit-cover .file-input {
+  position: absolute;
+  bottom: 10px;
+  right: 20px;
+}
+
+#cover_photo .edit-cover {
+  display: none;
+}
+#cover_photo:hover .edit-cover {
+  display: block;
+}
+
+
 #profile_text {
   width: 100%;
   display: flex;

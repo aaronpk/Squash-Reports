@@ -2,7 +2,11 @@
 
 @section('content')
 <div id="profile">
-  <div id="cover_photo" {!! $group->cover_photo ? 'style="background-image:url('.$group->cover_photo.')"' : 'class="none"' !!}></div>
+  <div id="cover_photo" {!! $group->cover_photo ? 'style="background-image:url('.$group->cover_photo.')"' : 'class="none"' !!}>
+    @if($user_subscribed)
+      <div class="edit-cover"><a href="/settings/cover-photo?group_id={{ $group->id }}" class="file-input ui small button">{{ $group->cover_photo ? 'Replace' : 'Choose' }} Cover Photo</a></div>
+    @endif
+  </div>
   <div id="profile_contents">
 
     <div id="profile_text">

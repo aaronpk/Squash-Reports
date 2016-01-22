@@ -2,7 +2,17 @@
 
 @section('content')
 <div id="profile">
-  <div id="cover_photo" {!! $user->cover_photo ? 'style="background-image:url('.$user->cover_photo.')"' : 'class="none"' !!}></div>
+  <div id="cover_photo" {!! $user->cover_photo ? 'style="background-image:url('.$user->cover_photo.')"' : 'class="none"' !!}>
+    @if($user->id == $who->id)
+      <div class="edit-cover"><a href="/settings/cover-photo" class="file-input ui small button">{{ $user->cover_photo ? 'Replace' : 'Choose' }} Cover Photo</a></div>
+    @endif
+    <!--
+    <div class="edit-cover"><label for="new_cover_photo" class="file-input ui small button">{{ $user->cover_photo ? 'Replace' : 'Choose' }} Cover Photo</div></div>
+    <form action="/action/replace-cover-photo" method="post">
+      <input type="file" style="visibility:hidden;" name="new_cover_photo" id="new_cover_photo">
+    </form>
+    -->
+  </div>
   <div id="profile_contents">
 
     <div id="profile_text">

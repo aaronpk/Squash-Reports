@@ -7,8 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use DB;
-use Auth;
+use DB, Auth, Storage;
 use DateTime, DateTimeZone;
 
 class Controller extends BaseController
@@ -355,6 +354,66 @@ class Controller extends BaseController
 
       return response()->json([
         'timezone' => $timezone
+      ]);
+    }
+
+    public function select_cover_photo(Request $request) {
+      list($who, $org) = self::logged_in();
+      list($my_groups, $other_groups) = self::load_user_groups($who);
+
+      $photos = Storage::files('photos');
+      $photos = array_map(function($p){
+        return basename($p);
+      }, $photos);
+
+      if($request->group_id) {
+        $group = DB::table('groups')->where('org_id', $org->id)->where('id', $request->group_id)->first();
+        if(!$group) {
+          return redirect('/dashboard');
+        }
+        $for = '#'.$group->shortname;
+      } else {
+        $for = 'your profile';
+      }
+
+      return view('cover-photo', [
+        'org' => $org,
+        'user' => $who,
+        'photos' => $photos,
+        'choose_for' => $for,
+        'group_id' => $request->group_id # will be null for editing user profiles
+      ]);
+    }
+
+    public function select_cover_photo_json(Request $request) {
+      list($who, $org) = self::logged_in();
+
+      // TODO: support uploading files and storing on S3
+      $photo_url = '/photos/'.$request->photo;
+
+      if($request->group_id) {
+        $group = DB::table('groups')->where('org_id', $org->id)->where('id', $request->group_id)->first();
+        if(!$group) {
+          return response()->json([
+            'error' => 'not found'
+          ]);
+        }
+
+        DB::table('groups')->where('id', $group->id)->update([
+          'cover_photo' => $photo_url
+        ]);
+
+        $redirect = '/'.$org->shortname.'/group/'.$group->shortname;
+      } else {
+        DB::table('users')->where('id', $who->id)->update([
+          'cover_photo' => $photo_url
+        ]);
+        $redirect = '/'.$org->shortname.'/'.$who->username;
+      }
+
+      return response()->json([
+        'url' => $photo_url,
+        'redirect' => $redirect
       ]);
     }
 

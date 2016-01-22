@@ -19,7 +19,6 @@
         <div class="ui simple dropdown item right">
           Settings <i class="dropdown icon"></i>
           <div class="menu">
-            <a class="item" href="/profile">Edit Profile</a>
             <a class="item" href="/auth/logout">Sign Out</a>
           </div>
         </div>

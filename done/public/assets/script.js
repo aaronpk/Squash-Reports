@@ -52,4 +52,11 @@ $(function(){
   // enable dropdowns
   $("select.dropdown").dropdown();
 
+  // submit the form when a file is selected
+  /*
+  $("#new_cover_photo").change(function(){
+    $(this).parents("form").submit();
+  });
+  */
+
 });
