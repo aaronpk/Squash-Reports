@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use DB, Auth, Storage;
 use DateTime, DateTimeZone;
+use \Firebase\JWT\JWT;
 
 class Controller extends BaseController
 {
@@ -432,6 +433,18 @@ class Controller extends BaseController
         ->get());
 
       return $likes;
+    }
+
+    public function login(Request $request) {
+
+      try {
+        $tokenData = JWT::decode($request->token, env('APP_KEY'), ['HS256']);
+      } catch(\Exception $e) {
+        return 'Login link was invalid';
+      }
+
+      Auth::loginUsingId($tokenData->user_id);
+      return redirect('/dashboard');
     }
 
     public function logout(Request $request) {

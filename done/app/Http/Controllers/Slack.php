@@ -5,10 +5,9 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use GuzzleHttp;
-use DB;
-use Log;
-use Auth;
+use DB, Log, Auth;
 use App\Jobs\ReplyViaSlack;
+use \Firebase\JWT\JWT;
 
 class Slack extends BaseController {
 
@@ -94,7 +93,6 @@ class Slack extends BaseController {
   }
 
   public function incoming(Request $request) {
-
     Log::info(json_encode($request->all()));
 
     if($request->input('token') != env('SLACK_VERIFICATION_TOKEN'))
@@ -187,43 +185,54 @@ class Slack extends BaseController {
       $group = null;
     }
 
-    // Add the entry
-    DB::table('entries')->insert([
-      'org_id' => $org->id,
-      'user_id' => $userID,
-      'group_id' => $groupID,
-      'created_at' => date('Y-m-d H:i:s'),
-      'command' => str_replace('/','',$request->input('command')),
-      'text' => $request->input('text'),
-      'slack_userid' => $request->input('user_id'),
-      'slack_username' => $request->input('user_name'),
-      'slack_channelid' => $request->input('channel_id'),
-      'slack_channelname' => $request->input('channel_name'),
-    ]);
+    if($request->input('command') == '/squash') {
 
-    if($newUser) {
-      $msg = 'Welcome! Looks like this is your first time using Done Reports.';
-      $this->replyViaSlack($request->input('response_url'), $msg);
-    }
+      $tokenData = [
+        'user_id' => $userID,
+        'exp' => time() + 300
+      ];
+      $link = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
 
-    if($groupWasCreated) {
-      $msg = 'This was the first message posted in #'.$request->input('channel_name').' so I created a new Done Reports group for you!';
-      $this->replyViaSlack($request->input('response_url'), $msg);
+      return response()->json(['text' => '<'.$link.'|Click to log in>']);
     } else {
-      if($group && !$subscription) {
-        $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
+      // Add the entry
+      DB::table('entries')->insert([
+        'org_id' => $org->id,
+        'user_id' => $userID,
+        'group_id' => $groupID,
+        'created_at' => date('Y-m-d H:i:s'),
+        'command' => str_replace('/','',$request->input('command')),
+        'text' => $request->input('text'),
+        'slack_userid' => $request->input('user_id'),
+        'slack_username' => $request->input('user_name'),
+        'slack_channelid' => $request->input('channel_id'),
+        'slack_channelname' => $request->input('channel_name'),
+      ]);
+
+      if($newUser) {
+        $msg = 'Welcome! Looks like this is your first time using Done Reports.';
         $this->replyViaSlack($request->input('response_url'), $msg);
       }
+
+      if($groupWasCreated) {
+        $msg = 'This was the first message posted in #'.$request->input('channel_name').' so I created a new Done Reports group for you!';
+        $this->replyViaSlack($request->input('response_url'), $msg);
+      } else {
+        if($group && !$subscription) {
+          $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
+          $this->replyViaSlack($request->input('response_url'), $msg);
+        }
+      }
+
+      $reply = 'Thanks, '.$request->input('user_name').'!';
+      if($group) {
+        $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
+      }
+
+      $this->replyViaSlack($request->input('response_url'), $reply, ['response_type' => 'ephemeral']);
+
+      return response()->json(['response_type' => 'in_channel']);
     }
-
-    $reply = 'Thanks, '.$request->input('user_name').'!';
-    if($group) {
-      $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
-    }
-
-    $this->replyViaSlack($request->input('response_url'), $reply, ['response_type' => 'ephemeral']);
-
-    return response()->json(['response_type' => 'in_channel']);
   }
 
   private function slackUserInfo($token, $userID) {
