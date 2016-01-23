@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Done Reports</title>
+    <title>Squash Reports</title>
     <link rel="stylesheet" type="text/css" href="/semantic-ui/semantic.min.css">
     <link rel="stylesheet" type="text/css" href="/assets/styles.css">
     <script src="/assets/jquery-2.2.0.min.js"></script>
@@ -12,8 +12,8 @@
       <div class="ui container">
         <a href="javascript:open_nav();" class="icon item collapse-icon"><i class="content icon"></i></a>
         <a href="/dashboard" class="item">
-          <img class="logo" src="/assets/compass.svg">
-          <span style="padding-left: 0.7em;">Done!</span>
+          <img class="logo" src="/assets/squash-logo-white-256.png">
+          <span style="padding-left: 0.7em;">Squash</span>
         </a>
         <a href="/{{ $org->shortname }}/{{ Auth::user()->username }}" class="item">Your Profile</a>
         <div class="ui simple dropdown item right">
