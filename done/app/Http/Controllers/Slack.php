@@ -287,8 +287,7 @@ class Slack extends BaseController {
   }
 
   private function replyViaSlack($url, $text) {
-    $job = (new ReplyViaSlack($url, $text))->onQueue(env('QUEUE_NAME'));
-    $this->dispatch($job);
+    $this->dispatch(new ReplyViaSlack($url, $text));
   }
 
 }
