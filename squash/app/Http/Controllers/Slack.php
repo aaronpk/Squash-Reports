@@ -257,23 +257,18 @@ class Slack extends BaseController {
 
     if($newUser) {
       $msg = 'Welcome! Looks like this is your first time using Squash Reports. You can <'.$loginLink.'|view your entries> on the web or wait for the daily email.';
-      $this->replyViaSlack($request->input('response_url'), $msg);
-    }
-
-    if($groupWasCreated) {
+      $this->replyViaSlack($request->input('response_url'), $msg, ['response_type' => 'ephemeral']);
+    } else if($groupWasCreated) {
       $msg = 'This was the first message posted in #'.$request->input('channel_name').' so I created a new Squash Reports group for you!';
-      $this->replyViaSlack($request->input('response_url'), $msg);
+      $this->replyViaSlack($request->input('response_url'), $msg, ['response_type' => 'in_channel']);
+    } else if($group && !$subscription) {
+      $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
+      $this->replyViaSlack($request->input('response_url'), $msg, ['response_type' => 'ephemeral']);
     } else {
-      if($group && !$subscription) {
-        $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
-        $this->replyViaSlack($request->input('response_url'), $msg);
-      }
-
       $reply = 'Thanks, '.$request->input('user_name').'!';
       $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
+      $this->replyViaSlack($request->input('response_url'), $reply, ['response_type' => 'ephemeral']);
     }
-
-    $this->replyViaSlack($request->input('response_url'), $reply, ['response_type' => 'ephemeral']);
 
     return response()->json(['response_type' => 'in_channel']);
   }
