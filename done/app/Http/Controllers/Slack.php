@@ -257,10 +257,8 @@ class Slack extends BaseController {
         $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
         $this->replyViaSlack($request->input('response_url'), $msg);
       }
-    }
 
-    $reply = 'Thanks, '.$request->input('user_name').'!';
-    if($group) {
+      $reply = 'Thanks, '.$request->input('user_name').'!';
       $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
     }
 
