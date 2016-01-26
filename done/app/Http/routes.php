@@ -3,10 +3,10 @@
 Route::get('/', 'Controller@index');
 Route::post('/slack/incoming', 'Slack@incoming');
 
-Route::get('/auth/logout', 'Controller@logout');
-Route::get('/auth/login', 'Controller@login');
 
 Route::group(['middleware' => ['web']], function () {
+  Route::get('/auth/login', 'Controller@login');
+  Route::get('/auth/logout', 'Controller@logout');
   Route::get('/slack/redirect', 'Slack@redirect');
 });
 
