@@ -305,7 +305,7 @@ class Slack extends BaseController {
         'username' => $userInfo->user->name,
         'email' => $userInfo->user->profile->email,
         'display_name' => $userInfo->user->profile->real_name,
-        'photo_url' => $userInfo->user->profile->image_512,
+        'photo_url' => (property_exists($userInfo->user->profile, 'image_512') ? $userInfo->user->profile->image_512 : $userInfo->user->profile->image_original),
         'timezone' => $userInfo->user->tz,
         'created_at' => date('Y-m-d H:i:s')
       ]);
