@@ -15,4 +15,5 @@ $ composer install
 $ php artisan migrate:install
 $ php artisan migrate
 $ sudo chown -R www-data storage
+$ git clone --depth=1 https://github.com/iamcal/emoji-data.git public/emoji
 ```
