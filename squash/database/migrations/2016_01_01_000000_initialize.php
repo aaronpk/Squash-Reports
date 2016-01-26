@@ -41,7 +41,7 @@ class Initialize extends Migration
           PRIMARY KEY (`id`),
           KEY `group_date` (`group_id`,`created_at`),
           KEY `user_date` (`user_id`,`created_at`),
-          FULLTEXT KEY `text` (`text`)
+          KEY `text` (`text`(191))
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
         ');
 

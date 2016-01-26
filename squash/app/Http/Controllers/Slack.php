@@ -45,7 +45,7 @@ class Slack extends BaseController {
         $slackteam = DB::table('slack_teams')->where('slack_teamid', $login->team_id)->first();
         if(!$slackteam) {
 
-          if(preg_match('/([a-zA-Z0-9\-]+)\.slack\.com/', $auth->url, $match) {
+          if(preg_match('/([a-zA-Z0-9\-]+)\.slack\.com/', $auth->url, $match)) {
             $shortname = $match[1];
           } else {
             $shortname = strtolower($login->team_name);
