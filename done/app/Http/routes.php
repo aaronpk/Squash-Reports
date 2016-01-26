@@ -3,7 +3,6 @@
 Route::get('/', 'Controller@index');
 Route::post('/slack/incoming', 'Slack@incoming');
 
-
 Route::group(['middleware' => ['web']], function () {
   Route::get('/auth/login', 'Controller@login');
   Route::get('/auth/logout', 'Controller@logout');
@@ -22,5 +21,4 @@ Route::group(['middleware' => ['web','auth']], function () {
   Route::post('/action/subscribe', 'Controller@subscribe_json');
   Route::post('/action/edit-timezone', 'Controller@edit_timezone_json');
   Route::post('/action/select-cover-photo', 'Controller@select_cover_photo_json');
-  # Route::post('/action/replace-cover-photo', 'Controller@replace_cover_photo');
 });

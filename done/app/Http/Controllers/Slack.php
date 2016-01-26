@@ -109,6 +109,12 @@ class Slack extends BaseController {
     // If the Slack user ID doesn't exist, create them and add defaults
     $slackuser = DB::table('slack_users')->where('slack_userid', $request->input('user_id'))->first();
 
+    // Don't allow entries from "directmessage" or "privategroup" channels until
+    // I can figure out how to properly deal with permissions for the entries.
+    if($request->input('channel_name') == 'directmessage' || $request->input('channel_name') == 'privategroup') {
+      return response()->json(['text' => 'Sorry, you can\'t post from private channels yet.']);      
+    }
+
     $newUser = false;
 
     if(!$slackuser) {
@@ -130,6 +136,17 @@ class Slack extends BaseController {
 
     $user = DB::table('users')->where('id', $userID)->first();
 
+    if($request->input('command') == '/squash') {
+
+      $tokenData = [
+        'user_id' => $userID,
+        'exp' => time() + 300
+      ];
+      $link = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
+
+      return response()->json(['text' => '<'.$link.'|Click to log in>']);
+    }
+
     $groupWasCreated = false;
 
     // Check if there is a group associated with this slack channel
@@ -148,16 +165,16 @@ class Slack extends BaseController {
         ]);
       }
     } else {
-      // Existing users posting in a new channel create a new group
-      if($newUser == false) {
-        $groupID = DB::table('groups')->insertGetId([
-          'org_id' => $org->id,
-          'shortname' => ($request->input('channel_name') == 'general' ? $org->shortname : $request->input('channel_name')),
-          'created_at' => date('Y-m-d H:i:s'),
-          'created_by' => $userID,
-          'timezone' => $user->timezone,
-        ]);
-        DB::table('slack_channels')->insertGetId([
+      // If the slack group ID doesn't match an existing group, check the channel name against the list of groups.
+      // This might happen for example if the same channel name exists on multiple slack servers and this org
+      // is linked to more than one slack server.
+
+      $group = DB::table('groups')->where('org_id', $org->id)->where('shortname', $request->input('channel_name'))->first();
+      if($group) {
+        $groupID = $group->id;
+
+        // Now add a mapping from this slack channel to this group
+        $channelID = DB::table('slack_channels')->insertGetId([
           'slack_team_id' => $team->id,
           'slack_channelid' => $request->input('channel_id'),
           'slack_channelname' => $request->input('channel_name'),
@@ -165,17 +182,49 @@ class Slack extends BaseController {
           'group_id' => $groupID,
           'created_at' => date('Y-m-d H:i:s')
         ]);
-        $subscription = false;
-        DB::table('subscriptions')->insert([
-          'user_id' => $userID,
-          'group_id' => $groupID,
-          'frequency' => 'daily',
-          'daily_localtime' => 21,
-          'created_at' => date('Y-m-d H:i:s')
-        ]);
-        $groupWasCreated = true;
+
+        // Check if the user is subscribed to this group already, and add a subscription if not
+        $subscription = DB::table('subscriptions')->where('group_id', $groupID)->where('user_id', $userID)->first();
+        if(!$subscription) {
+          DB::table('subscriptions')->insert([
+            'user_id' => $userID,
+            'group_id' => $groupID,
+            'frequency' => 'daily',
+            'daily_localtime' => 21,
+            'created_at' => date('Y-m-d H:i:s')
+          ]);
+        }
+
       } else {
-        $groupID = null;
+        // Existing users posting in a new channel create a new group
+        if($newUser == false) {
+          $groupID = DB::table('groups')->insertGetId([
+            'org_id' => $org->id,
+            'shortname' => ($request->input('channel_name') == 'general' ? $org->shortname : $request->input('channel_name')),
+            'created_at' => date('Y-m-d H:i:s'),
+            'created_by' => $userID,
+            'timezone' => $user->timezone,
+          ]);
+          DB::table('slack_channels')->insertGetId([
+            'slack_team_id' => $team->id,
+            'slack_channelid' => $request->input('channel_id'),
+            'slack_channelname' => $request->input('channel_name'),
+            'org_id' => $org->id,
+            'group_id' => $groupID,
+            'created_at' => date('Y-m-d H:i:s')
+          ]);
+          $subscription = false;
+          DB::table('subscriptions')->insert([
+            'user_id' => $userID,
+            'group_id' => $groupID,
+            'frequency' => 'daily',
+            'daily_localtime' => 21,
+            'created_at' => date('Y-m-d H:i:s')
+          ]);
+          $groupWasCreated = true;
+        } else {
+          $groupID = null;
+        }
       }
     }
 

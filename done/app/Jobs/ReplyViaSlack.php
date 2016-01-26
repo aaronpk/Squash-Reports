@@ -29,9 +29,13 @@ class ReplyViaSlack extends Job implements SelfHandling, ShouldQueue {
     if(array_key_exists('response_type', $this->_opts))
       $params['response_type'] = $this->_opts['response_type'];
 
-    $client = new GuzzleHttp\Client();
-    $res = $client->request('POST', $this->_url, [
-      'json' => $params
-    ]);
+    try {
+      $client = new GuzzleHttp\Client();
+      $res = $client->request('POST', $this->_url, [
+        'json' => $params
+      ]);
+    } catch(\Exception $e) {
+      Log::error("Exception posting to Slack: ".$e->getMessage());
+    }
   }
 }
