@@ -3,7 +3,7 @@
 Route::get('/', 'Controller@index');
 Route::post('/slack/incoming', 'Slack@incoming');
 
-Route::get('/auth/slack-auth', 'Slack@login');
+Route::get('/auth/slack-login', 'Slack@login');
 
 Route::group(['middleware' => ['web']], function () {
   Route::get('/auth/login', 'Controller@login');
