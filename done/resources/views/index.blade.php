@@ -361,8 +361,8 @@
       <div class="three wide column">
         <h4 class="ui inverted header">Squash Reports</h4>
         <div class="ui inverted link list">
-          <a href="https://github.com/aaronpk/Squash-Reports" class="item">Open Source</a>
-          <a href="https://github.com/aaronpk/Squash-Reports/issues" class="item">Issues</a>
+          <a href="https://github.com/esripdx/Squash-Reports" class="item">Open Source</a>
+          <a href="https://github.com/esripdx/Squash-Reports/issues" class="item">Issues</a>
         </div>
       </div>
       <div class="seven wide column">
