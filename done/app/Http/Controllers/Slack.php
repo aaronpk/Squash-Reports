@@ -13,6 +13,10 @@ class Slack extends BaseController {
 
   use DispatchesJobs;
 
+  public function login(Request $request) {
+    return redirect('https://slack.com/oauth/authorize?scope=commands,users:read,emoji:read&client_id='.env('SLACK_CLIENT_ID'));
+  }
+
   public function redirect(Request $request) {
     $client = new GuzzleHttp\Client();
     $res = $client->request('POST', 'https://slack.com/api/oauth.access', [
