@@ -45,6 +45,11 @@ class SendReport extends Job implements SelfHandling, ShouldQueue {
       ->orderBy('entries.created_at', 'asc')
       ->get();
 
+    if(count($entries) == 0) {
+      Log::info('No entries for this group');
+      return;
+    }
+
     $users = [];
     foreach($entries as $e) {
       if(!array_key_exists($e->user_id, $users)) {
@@ -72,12 +77,15 @@ class SendReport extends Job implements SelfHandling, ShouldQueue {
 
     Mail::send('emails.test', $data, function($message) use($data) {
       $message->from('done@squashreports.com', 'SquashBot');
+      $to = [];
       foreach($data['subscribers'] as $subscriber) {
         if($subscriber->email) {
           $message->to($subscriber->email);
+          $to[] = $subscriber->email;
         }
       }
       $message->subject('Report for '.$data['group']->shortname);
+      Log::info('Sent email to '.implode(', ', $to));
     });
 
   }
