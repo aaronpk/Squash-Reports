@@ -101,27 +101,25 @@ class Slack extends BaseController {
     // Check if the team exists
     $team = DB::table('slack_teams')->where('slack_teamid', $request->input('team_id'))->first();
     if(!$team) {
-      return response()->json(['text' => 'Your team isn\'t signed up yet. Please visit <'.env('APP_URL').'> to register.']);
+      return response()->json(['text' => 'Your team isn\'t signed up yet. Please visit '.env('APP_URL').' to register.']);
     }
 
     $org = DB::table('orgs')->where('id', $team->org_id)->first();
 
-    // If the Slack user ID doesn't exist, create them and add defaults
-    $slackuser = DB::table('slack_users')->where('slack_userid', $request->input('user_id'))->first();
-
     // Don't allow entries from "directmessage" or "privategroup" channels until
     // I can figure out how to properly deal with permissions for the entries.
     if($request->input('channel_name') == 'directmessage' || $request->input('channel_name') == 'privategroup') {
-      return response()->json(['text' => 'Sorry, you can\'t post from private channels yet.']);      
+      return response()->json(['text' => 'Sorry, you can\'t post from private channels yet.']);
     }
 
-    $newUser = false;
+    // If the Slack user ID doesn't exist, create them and add defaults
+    $slackuser = DB::table('slack_users')->where('slack_userid', $request->input('user_id'))->first();
 
+    $newUser = false;
     if(!$slackuser) {
       // Look up the user info for this slack user since they might already have an account in the org with the same email
       $userInfo = $this->slackUserInfo($team->slack_token, $request->input('user_id'));
       if($userInfo) {
-
         // Create the new user account or look up existing
         list($userID, $newUser) = $this->getOrCreateUser($org->id, $userInfo);
 
@@ -136,15 +134,14 @@ class Slack extends BaseController {
 
     $user = DB::table('users')->where('id', $userID)->first();
 
+    $tokenData = [
+      'user_id' => $userID,
+      'exp' => time() + 300
+    ];
+    $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
+
     if($request->input('command') == '/squash') {
-
-      $tokenData = [
-        'user_id' => $userID,
-        'exp' => time() + 300
-      ];
-      $link = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
-
-      return response()->json(['text' => '<'.$link.'|Click to log in>']);
+      return response()->json(['text' => '<'.$loginLink.'|Click to log in>']);
     }
 
     $groupWasCreated = false;
@@ -196,35 +193,34 @@ class Slack extends BaseController {
         }
 
       } else {
-        // Existing users posting in a new channel create a new group
-        if($newUser == false) {
-          $groupID = DB::table('groups')->insertGetId([
-            'org_id' => $org->id,
-            'shortname' => ($request->input('channel_name') == 'general' ? $org->shortname : $request->input('channel_name')),
-            'created_at' => date('Y-m-d H:i:s'),
-            'created_by' => $userID,
-            'timezone' => $user->timezone,
-          ]);
-          DB::table('slack_channels')->insertGetId([
-            'slack_team_id' => $team->id,
-            'slack_channelid' => $request->input('channel_id'),
-            'slack_channelname' => $request->input('channel_name'),
-            'org_id' => $org->id,
-            'group_id' => $groupID,
-            'created_at' => date('Y-m-d H:i:s')
-          ]);
-          $subscription = false;
-          DB::table('subscriptions')->insert([
-            'user_id' => $userID,
-            'group_id' => $groupID,
-            'frequency' => 'daily',
-            'daily_localtime' => 21,
-            'created_at' => date('Y-m-d H:i:s')
-          ]);
-          $groupWasCreated = true;
-        } else {
-          $groupID = null;
-        }
+        // Posting in a new channel always creates a new group
+        // TODO: If it becomes a problem that a bunch of new people are making new groups,
+        // we'll need to add a check earlier that only adds a new user account
+        // if they're posting into an existing group.
+        $groupID = DB::table('groups')->insertGetId([
+          'org_id' => $org->id,
+          'shortname' => ($request->input('channel_name') == 'general' ? $org->shortname : $request->input('channel_name')),
+          'created_at' => date('Y-m-d H:i:s'),
+          'created_by' => $userID,
+          'timezone' => $user->timezone,
+        ]);
+        DB::table('slack_channels')->insertGetId([
+          'slack_team_id' => $team->id,
+          'slack_channelid' => $request->input('channel_id'),
+          'slack_channelname' => $request->input('channel_name'),
+          'org_id' => $org->id,
+          'group_id' => $groupID,
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+        $subscription = false;
+        DB::table('subscriptions')->insert([
+          'user_id' => $userID,
+          'group_id' => $groupID,
+          'frequency' => 'daily',
+          'daily_localtime' => 21,
+          'created_at' => date('Y-m-d H:i:s')
+        ]);
+        $groupWasCreated = true;
       }
     }
 
@@ -234,54 +230,43 @@ class Slack extends BaseController {
       $group = null;
     }
 
-    if($request->input('command') == '/squash') {
+    // Add the entry
+    DB::table('entries')->insert([
+      'org_id' => $org->id,
+      'user_id' => $userID,
+      'group_id' => $groupID,
+      'created_at' => date('Y-m-d H:i:s'),
+      'command' => str_replace('/','',$request->input('command')),
+      'text' => $request->input('text'),
+      'slack_userid' => $request->input('user_id'),
+      'slack_username' => $request->input('user_name'),
+      'slack_channelid' => $request->input('channel_id'),
+      'slack_channelname' => $request->input('channel_name'),
+    ]);
 
-      $tokenData = [
-        'user_id' => $userID,
-        'exp' => time() + 300
-      ];
-      $link = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
-
-      return response()->json(['text' => '<'.$link.'|Click to log in>']);
-    } else {
-      // Add the entry
-      DB::table('entries')->insert([
-        'org_id' => $org->id,
-        'user_id' => $userID,
-        'group_id' => $groupID,
-        'created_at' => date('Y-m-d H:i:s'),
-        'command' => str_replace('/','',$request->input('command')),
-        'text' => $request->input('text'),
-        'slack_userid' => $request->input('user_id'),
-        'slack_username' => $request->input('user_name'),
-        'slack_channelid' => $request->input('channel_id'),
-        'slack_channelname' => $request->input('channel_name'),
-      ]);
-
-      if($newUser) {
-        $msg = 'Welcome! Looks like this is your first time using Done Reports.';
-        $this->replyViaSlack($request->input('response_url'), $msg);
-      }
-
-      if($groupWasCreated) {
-        $msg = 'This was the first message posted in #'.$request->input('channel_name').' so I created a new Done Reports group for you!';
-        $this->replyViaSlack($request->input('response_url'), $msg);
-      } else {
-        if($group && !$subscription) {
-          $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
-          $this->replyViaSlack($request->input('response_url'), $msg);
-        }
-      }
-
-      $reply = 'Thanks, '.$request->input('user_name').'!';
-      if($group) {
-        $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
-      }
-
-      $this->replyViaSlack($request->input('response_url'), $reply, ['response_type' => 'ephemeral']);
-
-      return response()->json(['response_type' => 'in_channel']);
+    if($newUser) {
+      $msg = 'Welcome! Looks like this is your first time using Squash Reports. You can <'.$loginLink.'|view your entries> on the web or wait for the daily email.';
+      $this->replyViaSlack($request->input('response_url'), $msg);
     }
+
+    if($groupWasCreated) {
+      $msg = 'This was the first message posted in #'.$request->input('channel_name').' so I created a new Squash Reports group for you!';
+      $this->replyViaSlack($request->input('response_url'), $msg);
+    } else {
+      if($group && !$subscription) {
+        $msg = 'Since this is your first time posting here, you are now subscribed to the "'.$group->shortname.'" group.';
+        $this->replyViaSlack($request->input('response_url'), $msg);
+      }
+    }
+
+    $reply = 'Thanks, '.$request->input('user_name').'!';
+    if($group) {
+      $reply .= ' I added your entry to the "'.$group->shortname.'" group!';
+    }
+
+    $this->replyViaSlack($request->input('response_url'), $reply, ['response_type' => 'ephemeral']);
+
+    return response()->json(['response_type' => 'in_channel']);
   }
 
   private function slackUserInfo($token, $userID) {
