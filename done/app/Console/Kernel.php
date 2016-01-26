@@ -13,6 +13,8 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
+        Commands\DailyReports::class,
+        Commands\SendReport::class,
         Commands\ImportEmoji::class,
     ];
 
@@ -24,5 +26,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
+      // Every hour, send out any daily reports that are scheduled for that hour
+      $schedule->command('report:daily')->hourly();
     }
 }
