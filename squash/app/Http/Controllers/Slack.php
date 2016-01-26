@@ -324,8 +324,8 @@ class Slack extends BaseController {
     ]);
   }
 
-  private function replyViaSlack($url, $text) {
-    $this->dispatch(new ReplyViaSlack($url, $text));
+  private function replyViaSlack($url, $text, $args) {
+    $this->dispatch(new ReplyViaSlack($url, $text, $args));
   }
 
 }
