@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class Initialize extends Migration
+class ImportEmoji extends Migration
 {
     /**
      * Run the migrations.
