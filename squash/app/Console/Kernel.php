@@ -16,6 +16,8 @@ class Kernel extends ConsoleKernel
         Commands\DailyReports::class,
         Commands\SendReport::class,
         Commands\ImportEmoji::class,
+        Commands\ImportDone::class,
+        Commands\CleanEntries::class,
     ];
 
     /**
