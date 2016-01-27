@@ -145,20 +145,22 @@ class Slack extends BaseController {
 
     $user = DB::table('users')->where('id', $userID)->first();
 
-    $tokenData = [
-      'user_id' => $userID,
-      'exp' => time() + 300
-    ];
-    $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
+    // Check if there is a group associated with this slack channel
+    $channel = DB::table('slack_channels')->where('org_id', $org->id)->where('slack_channelid', $request->input('channel_id'))->first();
 
     if($request->input('command') == '/squash') {
+      $tokenData = [
+        'user_id' => $userID,
+        'group_id' => ($channel ? $channel->group_id : false),
+        'exp' => time() + 300
+      ];
+      $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
+
       return response()->json(['text' => '<'.$loginLink.'|Click to log in>']);
     }
 
     $groupWasCreated = false;
 
-    // Check if there is a group associated with this slack channel
-    $channel = DB::table('slack_channels')->where('org_id', $org->id)->where('slack_channelid', $request->input('channel_id'))->first();
     if($channel) {
       $groupID = $channel->group_id;
       // add a "subscription" record for this user if it's not there yet
@@ -238,7 +240,7 @@ class Slack extends BaseController {
     if($groupID) {
       $group = DB::table('groups')->where('id', $groupID)->first();
     } else {
-      $group = null;
+      $group = null; // this probably can't happen
     }
 
     // Add the entry
@@ -254,6 +256,13 @@ class Slack extends BaseController {
       'slack_channelid' => $request->input('channel_id'),
       'slack_channelname' => $request->input('channel_name'),
     ]);
+
+    $tokenData = [
+      'user_id' => $userID,
+      'group_id' => $groupID,
+      'exp' => time() + 300
+    ];
+    $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
 
     if($newUser) {
       $msg = 'Welcome! Looks like this is your first time using Squash Reports. You can <'.$loginLink.'|view your entries> on the web or wait for the daily email.';

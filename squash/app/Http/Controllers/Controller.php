@@ -437,15 +437,24 @@ class Controller extends BaseController
     }
 
     public function login(Request $request) {
-
       try {
         $tokenData = JWT::decode($request->token, env('APP_KEY'), ['HS256']);
       } catch(\Exception $e) {
-        return 'Login link was invalid';
+        return 'Login link was invalid or expired';
       }
 
       Auth::loginUsingId($tokenData->user_id);
-      return redirect('/dashboard');
+
+      // Redirect to the group page that generated the token
+      if($tokenData->group_id) {
+        $group = DB::table('groups')
+          ->select('orgs.shortname AS org', 'groups.shortname AS group')
+          ->join('orgs', 'groups.org_id', '=', 'orgs.id')
+          ->where('groups.id', $tokenData->group_id)->first();
+        return redirect('/'.$group->org.'/group/'.$group->group);
+      } else {
+        return redirect('/dashboard');
+      }
     }
 
     public function logout(Request $request) {
