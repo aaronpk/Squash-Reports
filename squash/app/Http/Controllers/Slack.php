@@ -291,6 +291,14 @@ class Slack extends BaseController {
   }
 
   private function getOrCreateUser($orgID, $userInfo) {
+    $properties = ['image_512', 'image_256', 'image_192', 'image_128', 'image_original'];
+    $photo_url = false;
+    foreach($properties as $p) {
+      if($photo_url == false && property_exists($userInfo->user->profile, $p)) {
+        $photo_url = $userInfo->user->profile->{$p};
+      }
+    }
+
     // Check if there is already a user account for the email on this slack user
     $user = DB::table('users')
       ->where('org_id', $orgID)
@@ -299,13 +307,30 @@ class Slack extends BaseController {
     if($user) {
       $userID = $user->id;
       $new = false;
+
+      // Check for missing profile information and fill it in from Slack if possible
+      if($user->display_name == '' || $user->photo_url == '' || $user->timezone == '') {
+        $update = [];
+        if($user->photo_url == '' && $photo_url)
+          $update['photo_url'] = $photo_url;
+        if($user->display_name == '' && $userInfo->user->profile->real_name)
+          $update['display_name'] = $userInfo->user->profile->real_name;
+        if($user->timezone == '' && $userInfo->user->tz)
+          $update['timezone'] = $userInfo->user->tz;
+        if(count($update)) {
+          DB::table('users')
+            ->where('id', $user->id)
+            ->update($update);
+        }
+      }
+
     } else {
       $userID = DB::table('users')->insertGetId([
         'org_id' => $orgID,
         'username' => $userInfo->user->name,
         'email' => $userInfo->user->profile->email,
         'display_name' => $userInfo->user->profile->real_name,
-        'photo_url' => (property_exists($userInfo->user->profile, 'image_512') ? $userInfo->user->profile->image_512 : $userInfo->user->profile->image_original),
+        'photo_url' => $photo_url,
         'timezone' => $userInfo->user->tz,
         'created_at' => date('Y-m-d H:i:s')
       ]);
