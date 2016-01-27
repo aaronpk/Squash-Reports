@@ -201,6 +201,7 @@ class Controller extends BaseController
       $likes = $this->collectUserLikesOfEntries($who, $entries);
 
       return view('group', [
+        'who' => $who,
         'org' => $org,
         'group' => $group,
         'date' => $date,

@@ -17,6 +17,10 @@
         <div id="profile_bio">
           <h2>#{{ $group->shortname }}</h2>
 
+          <div class="timezone-info">
+            <div><i class="clock icon"></i> <span class="timezone-name">{{ $group->timezone }}</span></div>
+          </div>
+
           <br>
 
           <button class="ui button {{ $user_subscribed ? 'subscribed' : 'not-subscribed' }} subscribe-button" style="width: 208px;" data-group-id="{{ $group->id }}"></button>
@@ -24,8 +28,9 @@
           <div class="subscribers">
             <span><i class="users icon"></i> <span id="num-subscribers">{{ count($subscribers) }}</span> Subscriber{{ count($subscribers) == 1 ? '' : 's' }}</span>
             <ul class="group_subscribers">
+              <li class="hidden me_new"><a href="/{{ $org->shortname }}/{{ $who->username }}"><img src="{{ $who->photo_url }}" class="profile-photo" width="48"></a></li>
               @foreach($subscribers as $u)
-                <li><a href="/{{ $org->shortname }}/{{ $u->username }}"><img src="{{ $u->photo_url }}" class="profile-photo" width="48"></a></li>
+                <li class="{{ $who->id == $u->user_id ? 'me' : '' }}"><a href="/{{ $org->shortname }}/{{ $u->username }}"><img src="{{ $u->photo_url }}" class="profile-photo" width="48"></a></li>
               @endforeach
             </ul>
           </div>
@@ -43,7 +48,7 @@
                 <span style="opacity:0"><i class="caret left icon"></i></span>
               @endif
             </div>
-            <div class="date">{{ $date->format('F j, Y') }}</div>
+            <div class="date">{{ $date->format('l F j, Y') }}</div>
             <div class="link right">
               @if($next)
                 <a href="/{{ $org->shortname }}/group/{{ $group->shortname }}/{{ $next->format('Y-m-d') }}"><i class="caret right icon"></i></a>

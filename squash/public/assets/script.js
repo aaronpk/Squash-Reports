@@ -25,8 +25,11 @@ $(function(){
     }, function(response) {
       if(response.state == 'subscribed') {
         $("*[data-group-id="+response.group_id+"]").addClass('subscribed').removeClass('not-subscribed');
+        $(".group_subscribers .me_new").removeClass('hidden');
       } else {
         $("*[data-group-id="+response.group_id+"]").removeClass('subscribed').addClass('not-subscribed');
+        $(".group_subscribers .me").remove();
+        $(".group_subscribers .me_new").addClass('hidden');
       }
       $("#num-subscribers").text(response.num_subscribers);
     });

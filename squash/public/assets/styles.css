@@ -287,6 +287,10 @@ ul.group_subscribers li {
   margin-right: 4px;
 }
 
+ul.group_subscribers .hidden {
+  display: none;
+}
+
 .ui.button.not-subscribed:after {
   content: 'Subscribe';
 }
