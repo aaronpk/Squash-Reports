@@ -236,6 +236,28 @@ class Controller extends BaseController
       ]);
     }
 
+    public function user_subscriptions(Request $request) {
+      list($who, $org) = self::logged_in();
+
+      $user = DB::table('users')->where('org_id', $who->org_id)->where('username', $request->username)->first();
+      if(!$user) {
+        return 'not found';
+      }
+
+      $subscriptions = DB::table('groups')
+        ->join('subscriptions', 'groups.id','=','subscriptions.group_id')
+        ->where('subscriptions.user_id', $user->id)
+        ->orderBy('groups.shortname', 'asc')
+        ->get();
+
+      return view('user-subscriptions', [
+        'who' => $who,
+        'org' => $org,
+        'user' => $user,
+        'subscriptions' => $subscriptions,
+      ]);
+    }
+
     public function entry(Request $request) {
       list($who, $org) = self::logged_in();
 
@@ -388,7 +410,8 @@ class Controller extends BaseController
 
       return response()->json([
         'state' => $state,
-        'user_id' => $request->user_id
+        'user_id' => $request->user_id,
+        'group_id' => $request->group_id
       ]);
     }
 

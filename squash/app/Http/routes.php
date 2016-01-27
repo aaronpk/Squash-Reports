@@ -19,6 +19,7 @@ Route::group(['middleware' => ['web','auth']], function () {
   Route::get('/{org}/group/{group}/{date}', 'Controller@group_profile');
   Route::get('/{org}/group/{group}/subscribers', 'Controller@group_subscribers');
   Route::get('/{org}/{username}', 'Controller@user_profile');
+  Route::get('/{org}/{username}/subscriptions', 'Controller@user_subscriptions');
   #Route::get('/{org}/{username}/{group}', 'Controller@user_profile_group');
   Route::post('/action/like-entry', 'Controller@like_entry_json');
   Route::post('/action/subscribe', 'Controller@subscribe_json');
