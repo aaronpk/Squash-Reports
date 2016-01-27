@@ -21,6 +21,13 @@ class AppServiceProvider extends ServiceProvider
           echo $date->format(\'M j g:ia\'); ?>';
       });
 
+      Blade::directive('entrydateforgroup', function($entry) {
+        return '<?php
+          $date = new DateTime($entry->created_at);
+          $date->setTimeZone(new DateTimeZone($entry->timezone));
+          echo $date->format(\'Y-m-d\'); ?>';
+      });
+
       Blade::directive('entrytime', function($entry) {
         return '<?php
           $date = new DateTime($entry->created_at);

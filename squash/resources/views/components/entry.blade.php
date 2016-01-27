@@ -13,7 +13,7 @@
         </a>
       </div>
       <div class="group-date">
-        <a href="/{{ $org->shortname }}/group/{{ $entry->groupname }}">#{{ $entry->groupname }}</a>
+        <a href="/{{ $org->shortname }}/group/{{ $entry->groupname }}/@entrydateforgroup($entry)">#{{ $entry->groupname }}</a>
         &middot;
         <a href="/{{ $org->shortname }}/entry/{{ $entry->id }}" class="u-url">
           @entrydate($entry)
