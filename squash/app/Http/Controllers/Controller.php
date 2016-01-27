@@ -214,6 +214,28 @@ class Controller extends BaseController
       ]);
     }
 
+    public function group_subscribers(Request $request) {
+      list($who, $org) = self::logged_in();
+
+      $group = DB::table('groups')->where('org_id', $who->org_id)->where('shortname', $request->group)->first();
+      if(!$group) {
+        return 'not found';
+      }
+
+      $subscribers = DB::table('users')
+        ->join('subscriptions', 'users.id','=','subscriptions.user_id')
+        ->where('subscriptions.group_id', $group->id)
+        ->orderBy('users.username', 'asc')
+        ->get();
+
+      return view('group-subscribers', [
+        'who' => $who,
+        'org' => $org,
+        'group' => $group,
+        'subscribers' => $subscribers,
+      ]);
+    }
+
     public function entry(Request $request) {
       list($who, $org) = self::logged_in();
 
@@ -337,6 +359,36 @@ class Controller extends BaseController
         'state' => $state,
         'group_id' => $group->id,
         'num_subscribers' => $num_subscribers
+      ]);
+    }
+
+    public function admin_unsubscribe_json(Request $request) {
+      // Allow group admins to unsubscribe other users from the group
+      list($who, $org) = self::logged_in();
+
+      // TODO: check that the authenticated user is the group admin once permissions are added
+
+      $group = DB::table('groups')
+        ->select('groups.*')
+        ->where('org_id', $org->id)
+        ->where('id', $request->group_id)
+        ->first();
+
+      if(!$group) {
+        return response()->json([
+          'error' => 'group not found'
+        ]);
+      }
+
+      DB::table('subscriptions')
+        ->where('group_id', $group->id)
+        ->where('user_id', $request->user_id)
+        ->delete();
+      $state = 'unsubscribed';
+
+      return response()->json([
+        'state' => $state,
+        'user_id' => $request->user_id
       ]);
     }
 

@@ -301,9 +301,9 @@ class Slack extends BaseController {
 
   private function getOrCreateUser($orgID, $userInfo) {
     $properties = ['image_512', 'image_256', 'image_192', 'image_128', 'image_original'];
-    $photo_url = false;
+    $photo_url = '';
     foreach($properties as $p) {
-      if($photo_url == false && property_exists($userInfo->user->profile, $p)) {
+      if($photo_url == '' && property_exists($userInfo->user->profile, $p)) {
         $photo_url = $userInfo->user->profile->{$p};
       }
     }
@@ -336,7 +336,7 @@ class Slack extends BaseController {
     } else {
       $userID = DB::table('users')->insertGetId([
         'org_id' => $orgID,
-        'username' => $userInfo->user->name,
+        'username' => $userInfo->user->name, // TODO: check for duplicate usernames and change the new one in some way
         'email' => $userInfo->user->profile->email,
         'display_name' => $userInfo->user->profile->real_name,
         'photo_url' => $photo_url,

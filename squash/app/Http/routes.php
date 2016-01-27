@@ -17,10 +17,12 @@ Route::group(['middleware' => ['web','auth']], function () {
   Route::get('/{org}/entry/{entry_id}', 'Controller@entry');
   Route::get('/{org}/group/{group}', 'Controller@group_profile');
   Route::get('/{org}/group/{group}/{date}', 'Controller@group_profile');
+  Route::get('/{org}/group/{group}/subscribers', 'Controller@group_subscribers');
   Route::get('/{org}/{username}', 'Controller@user_profile');
   #Route::get('/{org}/{username}/{group}', 'Controller@user_profile_group');
   Route::post('/action/like-entry', 'Controller@like_entry_json');
   Route::post('/action/subscribe', 'Controller@subscribe_json');
   Route::post('/action/edit-timezone', 'Controller@edit_timezone_json');
   Route::post('/action/select-cover-photo', 'Controller@select_cover_photo_json');
+  Route::post('/action/admin/unsubscribe', 'Controller@admin_unsubscribe_json');
 });
