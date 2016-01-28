@@ -49,7 +49,7 @@ class Controller extends BaseController
         ->join('groups', 'entries.group_id','=','groups.id')
         ->join('users', 'entries.user_id','=','users.id')
         ->join('subscriptions', 'entries.group_id', '=', 'subscriptions.group_id')
-        ->where('subscriptions.user_id', $who->id)
+        ->where('users.id', $who->id)
         ->orderBy('entries.created_at', 'desc')
         ->limit(20);
 
