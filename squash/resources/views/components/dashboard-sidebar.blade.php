@@ -1,4 +1,5 @@
 <div class="ui secondary vertical menu">
+  <!--
   <div class="item">
     <form action="/dashboard" method="get" class="ui form">
       <div class="ui icon input">
@@ -7,6 +8,7 @@
       </div>
     </form>
   </div>
+  -->
   <div class="item">
     <div class="header">My Groups</div>
     <ul class="group_list">
