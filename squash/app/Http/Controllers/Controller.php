@@ -45,11 +45,10 @@ class Controller extends BaseController
       list($my_groups, $other_groups) = self::load_user_groups($who);
 
       $entries = DB::table('entries')
-        ->select('entries.*', 'groups.shortname AS groupname', 'users.username', 'users.display_name', 'users.photo_url', 'users.timezone')
+        ->select('entries.*', 'groups.shortname AS groupname')
         ->join('groups', 'entries.group_id','=','groups.id')
-        ->join('users', 'entries.user_id','=','users.id')
         ->join('subscriptions', 'entries.group_id', '=', 'subscriptions.group_id')
-        ->where('users.id', $who->id)
+        ->where('subscriptions.user_id', $who->id)
         ->orderBy('entries.created_at', 'desc')
         ->limit(20);
 
@@ -61,6 +60,21 @@ class Controller extends BaseController
       }
 
       $entries = $entries->get();
+
+      // Get the user info for all users who have an entry
+      $users = [];
+      foreach($entries as $entry) {
+        if(array_key_exists($entry->user_id, $users)) {
+          $u = $users[$entry->user_id];
+        } else {
+          $u = DB::table('users')->where('id', $entry->user_id)->first();
+          $users[$entry->user_id] = $u;
+        }
+        $entry->username = $u->username;
+        $entry->display_name = $u->display_name;
+        $entry->photo_url = $u->photo_url;
+        $entry->timezone = $u->timezone;
+      }
 
       $likes = $this->collectUserLikesOfEntries($who, $entries);
 
