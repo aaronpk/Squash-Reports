@@ -9,6 +9,7 @@
     </form>
   </div>
   -->
+  @if(count($my_groups))
   <div class="item">
     <div class="header">My Groups</div>
     <ul class="group_list">
@@ -17,6 +18,8 @@
       @endforeach
     </ul>
   </div>
+  @endif
+  @if(count($other_groups))
   <div class="item">
     <div class="header">More Groups</div>
     <ul class="group_list">
@@ -25,4 +28,5 @@
       @endforeach
     </ul>
   </div>
+  @endif
 </div>
