@@ -123,7 +123,6 @@
     }
 
   </style>
-
   <script src="/assets/jquery-2.2.0.min.js"></script>
   <script src="/semantic-ui/semantic.min.js"></script>
   <script>
@@ -151,6 +150,16 @@
     })
   ;
   </script>
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:site" content="@squashreports" />
+  <meta name="twitter:title" content="Squash Reports" />
+  <meta name="twitter:description" content="Squash Reports keep your team in touch every day. Works seamlessly with Slack." />
+  <meta name="twitter:image" content="{{ env('APP_URL') }}/assets/share-image.jpg" />
+  <meta property="og:url"                content="{{ env('APP_URL') }}" />
+  <meta property="og:type"               content="article" />
+  <meta property="og:title"              content="Squash Reports" />
+  <meta property="og:description"        content="Squash Reports keep your team in touch every day. Works seamlessly with Slack." />
+  <meta property="og:image"              content="{{ env('APP_URL') }}/assets/share-image.jpg" />
 </head>
 <body>
 
@@ -197,12 +206,11 @@
     </div>
     -->
 
-    <div class="ui text container">
-      <h1 class="ui inverted header">
-        Squash Reports
-      </h1>
-      <h2>Squash Reports keep your team in touch every day</h2>
+    <div class="ui text container h-x-app">
+      <h1 class="ui inverted header p-name">Squash Reports</h1>
+      <h2 class="p-summary">Squash Reports keep your team in touch every day</h2>
       <a href="/auth/slack-login"><img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x"></a>
+      <a href="/assets/squash-logo-green-512.png" class="u-photo"></a>
     </div>
   </div>
 
