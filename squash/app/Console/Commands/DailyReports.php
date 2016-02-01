@@ -28,7 +28,9 @@ class DailyReports extends Command
     foreach($groups as $group) {
       // Check if the current time in the group's timezone matches the subscription time
       $date = new DateTime();
-      $date->setTimeZone(new DateTimeZone($group->timezone));
+      if($group->timezone) {
+        $date->setTimeZone(new DateTimeZone($group->timezone));
+      }
       if((int)$date->format('G') == $group->daily_localtime) {
         Log::info('Queuing a report for '.$group->shortname.' at '.$date->format('g:ia P'));
         $this->dispatch(new SendReport($date->format('Y-m-dTH:00:00P'), $group->id, explode(',',$group->users)));
