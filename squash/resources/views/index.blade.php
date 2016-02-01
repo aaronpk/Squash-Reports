@@ -373,20 +373,22 @@
   <div class="ui inverted vertical footer segment">
   <div class="ui container">
     <div class="ui stackable inverted divided equal height stackable grid">
-      <div class="three wide column">
+      <div class="five wide column">
         <h4 class="ui inverted header">Squash Reports</h4>
         <div class="ui inverted link list">
           <a href="https://github.com/esripdx/Squash-Reports" class="item">Open Source</a>
           <a href="https://github.com/esripdx/Squash-Reports/issues" class="item">Issues</a>
         </div>
-      </div>
-      <div class="seven wide column">
         <h4 class="ui inverted header">Credits</h4>
         <p>
           <a href="https://thenounproject.com/search/?q=squash&i=56891">Acorn Squash Icon</a> by Irit Barzily from the Noun Project.
           Background photos CC0 from <a href="https://unsplash.com/license">Unsplash</a> photographers.
           Built with the <a href="http://semantic-ui.com/">Semantic UI</a> CSS framework, MIT license.
         </p>
+      </div>
+      <div class="seven wide column">
+        <a class="twitter-timeline" data-dnt="true" href="https://twitter.com/SquashReports" data-widget-id="694239332400439296">Tweets by @SquashReports</a>
+        <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+"://platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
       </div>
     </div>
   </div>
