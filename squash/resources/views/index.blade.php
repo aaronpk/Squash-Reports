@@ -250,7 +250,7 @@
             vent your frustration with <span class="ui horizontal large orange label">/blocking</span>,
             <span class="ui horizontal large teal label">/share</span> a helpful link,
             capture a <span class="ui horizontal large blue label">/quote</span> from a co-worker,
-            or <span class="ui horizontal large purple label">/hero</span> someone when they do something nice.</p>
+            or say <span class="ui horizontal large purple label">/thanks</span> to someone when they do something nice.</p>
         </div>
         <div class="seven wide column">
           <ul class="commands">
@@ -259,7 +259,7 @@
             <li><div class="ui horizontal large orange label">/blocking</div> the wifi is terrible today</li>
             <li><div class="ui horizontal large teal label">/share</div> https://squashreports.com/</li>
             <li><div class="ui horizontal large blue label">/quote</div> "this is the best!" -aaronpk</li>
-            <li><div class="ui horizontal large purple label">/hero</div> SquashBot for always listening</li>
+            <li><div class="ui horizontal large purple label">/thanks</div> SquashBot for always listening</li>
           </ul>
         </div>
       </div>
