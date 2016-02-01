@@ -1,5 +1,4 @@
 <div class="ui secondary vertical menu">
-  <!--
   <div class="item">
     <form action="/dashboard" method="get" class="ui form">
       <div class="ui icon input">
@@ -8,7 +7,6 @@
       </div>
     </form>
   </div>
-  -->
   @if(count($my_groups))
   <div class="item">
     <div class="header">My Groups</div>
