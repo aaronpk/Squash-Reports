@@ -35,3 +35,6 @@
     This email was sent to <?= implode(', ', array_map(function($u){ return $u->email; }, $subscribers)) ?> for the "<?= $group->shortname ?>" team. <a href="{{ env('APP_URL') }}/{{ $org->shortname }}/group/{{ $group->shortname }}">Change your subscription preferences</a>.
   </div>
 </div>
+
+</body>
+</html>
