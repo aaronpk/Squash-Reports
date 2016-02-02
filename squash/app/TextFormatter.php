@@ -35,7 +35,7 @@ class TextFormatter {
         if(substr($url, 0, 4) != 'http') {
           $url = 'http://'.$url;
         }
-        return '<a href="'.$url.'">'.$url.'</a>';
+        return '<a href="'.$url.'">'.$matches[1].'</a>';
       }, $text);
 
     // Match emoji
@@ -54,15 +54,20 @@ class TextFormatter {
 
     // Replace #hashtags if they match other group names
     $text = preg_replace_callback('/(?<=\s|^)#([a-z0-9_\-\.]+)/i', function($matches) use($org) {
-      $channel = DB::table('slack_channels')
-        ->where('org_id', $org->id)
-        ->where('slack_channelname', $matches[1])
+      $find = $matches[1];
+      $group = DB::table('groups')
+        ->join('slack_channels', 'groups.id', '=', 'slack_channels.group_id')
+        ->where('groups.org_id', $org->id)
+        ->where(function($query) use($find){
+          $query->where('slack_channelname', $find)
+            ->orWhere('groups.shortname', $find);
+        })
         ->first();
-      if(!$channel) {
+      if(!$group) {
         return '#'.$matches[1];
       }
 
-      return '<a href="/'.$org->shortname.'/group/'.$matches[1].'">#'.$matches[1].'</a>';
+      return '<a href="'.env('APP_URL').'/'.$org->shortname.'/group/'.$group->shortname.'">#'.$find.'</a>';
     }, $text);
 
     // Replace @username references by looking up users in the database
@@ -83,7 +88,7 @@ class TextFormatter {
         return '@'.$matches[1];
       }
 
-      return '<a href="/'.$org->shortname.'/'.$user->username.'">@'.$matches[1].'</a>';
+      return '<a href="'.env('APP_URL').'/'.$org->shortname.'/'.$user->username.'">@'.$matches[1].'</a>';
     }, $text);
 
     return $text;
