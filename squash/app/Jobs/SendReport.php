@@ -75,8 +75,8 @@ class SendReport extends Job implements SelfHandling, ShouldQueue {
       'to' => $to,
     ];
 
-    Mail::send('emails.test', $data, function($message) use($data) {
-      $message->from('done@squashreports.com', 'SquashBot');
+    Mail::send('emails.daily', $data, function($message) use($data) {
+      $message->from(env('MAIL_FROM'), env('MAIL_FROM_NAME'));
       $to = [];
       foreach($data['subscribers'] as $subscriber) {
         if($subscriber->email) {
