@@ -5,7 +5,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use GuzzleHttp;
-use DB, Log, Auth;
+use DB, Log, Auth, Mail;
 use App\Jobs\ReplyViaSlack;
 use \Firebase\JWT\JWT;
 
@@ -150,16 +150,46 @@ class Slack extends BaseController {
 
     // Login from Slack
     if($request->input('command') == '/squash') {
-      $tokenData = [
-        'user_id' => $userID,
-        'group_id' => ($channel ? $channel->group_id : false),
-        'channel_id' => ($channel ? $channel->id : false),
-        'org_id' => $org->id,
-        'exp' => time() + 300
-      ];
-      $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
+      if(trim($request->input('text')) == '' || trim($request->input('text')) == 'login') {
+        $tokenData = [
+          'user_id' => $userID,
+          'group_id' => ($channel ? $channel->group_id : false),
+          'channel_id' => ($channel ? $channel->id : false),
+          'org_id' => $org->id,
+          'exp' => time() + 300
+        ];
+        $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
 
-      return response()->json(['text' => '<'.$loginLink.'|Click to log in>']);
+        return response()->json(['text' => '<'.$loginLink.'|Click to log in>']);
+      } else {
+
+        DB::table('feedback')->insert([
+          'created_at' => date('Y-m-d H:i:s'),
+          'user_id' => $userID,
+          'group_id' => ($channel ? $channel->group_id : false),
+          'channel_id' => ($channel ? $channel->id : false),
+          'org_id' => $org->id,
+          'text' => $request->input('text')
+        ]);
+
+        $data = [
+          'text' => $request->input('text'),
+          'to' => env('MAIL_FEEDBACK'),
+          'username' => $user->username,
+          'from' => $user->email,
+          'org' => $org->name
+        ];
+
+        Mail::send('emails.feedback', $data, function($message) use($user) {
+          $message->from(env('MAIL_FROM'), env('MAIL_FROM_NAME'));
+          $message->replyTo($user->email, $user->display_name ?: $user->username);
+          $message->to(env('MAIL_FEEDBACK'));
+          $message->subject('Squash Reports Feedback');
+          Log::info('Sent feedback email');
+        });
+
+        return response()->json(['text' => 'Thanks for the feedback!']);
+      }
     }
 
     // Reply with a private message if they typed "/done" with no text
