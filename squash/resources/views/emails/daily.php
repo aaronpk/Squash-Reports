@@ -28,6 +28,10 @@
   </div>
 
   <div style="font-size: 9pt; text-align: center; padding-top: 10px; border-top: 3px #6d812f solid;">
+    You can browse past entries from all groups in your organization. Type <code>/squash login</code> in Slack to sign in!
+  </div>
+
+  <div style="font-size: 9pt; text-align: center; padding-top: 10px; border-top: 3px #6d812f solid;">
     This email was sent to <?= implode(', ', array_map(function($u){ return $u->email; }, $subscribers)) ?> for the "<?= $group->shortname ?>" team. <a href="{{ env('APP_URL') }}/{{ $org->shortname }}/group/{{ $group->shortname }}">Change your subscription preferences</a>.
   </div>
 </div>
