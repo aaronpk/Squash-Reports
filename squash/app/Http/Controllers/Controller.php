@@ -534,6 +534,14 @@ class Controller extends BaseController
 
       Auth::loginUsingId($tokenData->user_id);
 
+      DB::table('slack_logins')->insert([
+        'created_at' => date('Y-m-d H:i:s'),
+        'user_id' => $tokenData->user_id,
+        'group_id' => $tokenData->group_id,
+        'channel_id' => $tokenData->channel_id,
+        'org_id' => $tokenData->org_id
+      ]);
+
       // Redirect to the group page that generated the token
       if($tokenData->group_id) {
         $group = DB::table('groups')

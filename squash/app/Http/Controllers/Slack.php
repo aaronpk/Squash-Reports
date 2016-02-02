@@ -152,6 +152,8 @@ class Slack extends BaseController {
       $tokenData = [
         'user_id' => $userID,
         'group_id' => ($channel ? $channel->group_id : false),
+        'channel_id' => ($channel ? $channel->id : false),
+        'org_id' => $org->id,
         'exp' => time() + 300
       ];
       $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
