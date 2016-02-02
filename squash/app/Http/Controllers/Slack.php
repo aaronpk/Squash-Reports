@@ -148,6 +148,7 @@ class Slack extends BaseController {
     // Check if there is a group associated with this slack channel
     $channel = DB::table('slack_channels')->where('org_id', $org->id)->where('slack_channelid', $request->input('channel_id'))->first();
 
+    // Login from Slack
     if($request->input('command') == '/squash') {
       $tokenData = [
         'user_id' => $userID,
@@ -159,6 +160,11 @@ class Slack extends BaseController {
       $loginLink = env('APP_URL').'/auth/login?token='.JWT::encode($tokenData, env('APP_KEY'));
 
       return response()->json(['text' => '<'.$loginLink.'|Click to log in>']);
+    }
+
+    // Reply with a private message if they typed "/done" with no text
+    if(trim($request->input('text')) == '') {
+      return response()->json(['text' => 'Try again with a message, e.g. '.$request->input('command').' your text here']);
     }
 
     $groupWasCreated = false;
