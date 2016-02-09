@@ -55,7 +55,10 @@ class SendReport extends Command
     // Set the date to now
     $date = new DateTime();
     // Convert to a local time
-    $date->setTimeZone(new DateTimeZone($group->timezone));
+    try {
+      $date->setTimeZone(new DateTimeZone($group->timezone));
+    } catch(\Exception $e) {
+    }
     // Set the hour/minute/second
     $date->setTime($subscription->daily_localtime, 0, 0);
 

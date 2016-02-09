@@ -28,7 +28,10 @@ class SendReport extends Job implements SelfHandling, ShouldQueue {
     Log::info('Sending report for ' . $group->shortname . ' to ' . count($subscribers) . ' users');
 
     $date = new DateTime($this->_date);
-    $date->setTimeZone(new DateTimeZone($group->timezone));
+    try {
+      $date->setTimeZone(new DateTimeZone($group->timezone));
+    } catch(\Exception $e) {
+    }
 
     $from = new DateTime($date->format('c'));
     $from->setTimeZone(new DateTimeZone('UTC'));
@@ -62,8 +65,11 @@ class SendReport extends Job implements SelfHandling, ShouldQueue {
       $users[$e->user_id]['entries'][] = $e;
     }
 
-    $from->setTimeZone(new DateTimeZone($group->timezone));
-    $to->setTimeZone(new DateTimeZone($group->timezone));
+    try {
+      $from->setTimeZone(new DateTimeZone($group->timezone));
+      $to->setTimeZone(new DateTimeZone($group->timezone));
+    } catch(\Exception $e) {
+    }
 
     $data = [
       'org' => $org,
