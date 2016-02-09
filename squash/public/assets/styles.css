@@ -192,14 +192,17 @@ nav {
 
 /* ************************** */
 
+.user-entry-list {
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.2);
+}
+
 ul.entry-list {
   list-style-type: none;
   margin: 0;
   margin-bottom: 2em;
   padding: 0;
-  background: #fff;
-  border-radius: 6px;
-  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.2);
 }
 
 .entry {
@@ -317,25 +320,25 @@ ul.group_subscribers .hidden {
   box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.2);
 }
 
-.user-list .nav {
+.date-nav {
   display: flex;
   align-items: center;
   border-bottom: 1px #ddd solid;
 }
-.user-list .nav .link {
+.date-nav .link {
   flex-grow: 1;
   flex-basis: 80px;
   padding: 10px;
 }
-.user-list .nav .link .icon {
+.date-nav .link .icon {
   font-weight: bold;
   font-size: 2em;
   line-height: normal;
 }
-.user-list .nav .right {
+.date-nav .right {
   text-align: right;
 }
-.user-list .nav .date {
+.date-nav .date {
   flex-grow: 10;
   text-align: center;
   font-size: 1.4em;

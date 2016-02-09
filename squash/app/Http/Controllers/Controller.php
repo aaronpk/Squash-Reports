@@ -99,15 +99,68 @@ class Controller extends BaseController
 
       list($my_groups, $other_groups) = self::load_user_groups($user);
 
+      if($request->date) {
+        try {
+          $date = new DateTime($request->date, new DateTimeZone($user->timezone));
+        } catch(Exception $e) {
+          return 'invalid date';
+        }
+      } else {
+        $latestEntry = DB::table('entries')
+          ->where('user_id', $user->id)
+          ->orderBy('created_at', 'desc')
+          ->limit(1)
+          ->first();
+        if($latestEntry) {
+          $date = new DateTime($latestEntry->created_at);
+          $date->setTimeZone(new DateTimeZone($user->timezone));
+        } else {
+          $date = new DateTime('now', new DateTimeZone($user->timezone));
+        }
+      }
+
+      $from = new DateTime($date->format('Y-m-d 00:00:00'), new DateTimeZone($user->timezone));
+      $from->setTimeZone(new DateTimeZone('UTC'));
+      $to = new DateTime($date->format('Y-m-d 23:59:59'), new DateTimeZone($user->timezone));
+      $to->setTimeZone(new DateTimeZone('UTC'));
+
       $entries = DB::table('entries')
         ->select('entries.*', 'groups.shortname AS groupname', 'users.username', 'users.display_name', 'users.photo_url', 'users.timezone')
         ->join('groups', 'entries.group_id','=','groups.id')
         ->join('users', 'entries.user_id','=','users.id')
         ->where('entries.user_id', $user->id)
-        ->orderBy('entries.created_at', 'desc')
-        ->limit(20)->get();
+        ->where('entries.created_at', '>=', $from->format('Y-m-d H:i:s'))
+        ->where('entries.created_at', '<=', $to->format('Y-m-d H:i:s'))
+        ->orderBy('entries.created_at', 'asc')
+        ->get();
 
       $likes = $this->collectUserLikesOfEntries($who, $entries);
+
+      $previousEntry = DB::table('entries')
+        ->where('user_id', $user->id)
+        ->where('created_at', '<', $from->format('Y-m-d H:i:s'))
+        ->orderBy('created_at', 'desc')
+        ->limit(1)
+        ->first();
+      if($previousEntry) {
+        $previous = new DateTime($previousEntry->created_at);
+        $previous->setTimeZone(new DateTimeZone($user->timezone));
+      } else {
+        $previous = false;
+      }
+
+      $nextEntry = DB::table('entries')
+        ->where('user_id', $user->id)
+        ->where('created_at', '>', $to->format('Y-m-d H:i:s'))
+        ->orderBy('created_at', 'asc')
+        ->limit(1)
+        ->first();
+      if($nextEntry) {
+        $next = new DateTime($nextEntry->created_at);
+        $next->setTimeZone(new DateTimeZone($user->timezone));
+      } else {
+        $next = false;
+      }
 
       $timezones = ["America/Los_Angeles", "America/Chicago", "America/New_York", "America/Phoenix", "Asia/Hong_Kong", "Europe/Berlin", "Europe/Dublin", "Europe/Amsterdam", "Europe/London", "Europe/Stockholm", "Europe/Zurich"];
 
@@ -115,8 +168,11 @@ class Controller extends BaseController
         'org' => $org,
         'user' => $user,
         'who' => $who,
+        'date' => $date,
         'my_groups' => $my_groups,
         'entries' => $entries,
+        'previous' => $previous,
+        'next' => $next,
         'likes' => $likes,
         'timezones' => $timezones
       ]);

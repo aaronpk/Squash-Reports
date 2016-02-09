@@ -55,11 +55,31 @@
       </div>
       <div id="profile_feed">
 
-        <ul class="entry-list">
-          @foreach($entries as $entry)
-            @include('components/entry')
-          @endforeach
-        </ul>
+        <div class="user-entry-list">
+          <div class="date-nav">
+            <div class="link left">
+              @if($previous)
+                <a href="/{{ $org->shortname }}/{{ $user->username }}/{{ $previous->format('Y-m-d') }}"><i class="caret left icon"></i></a>
+              @else
+                <span style="opacity:0"><i class="caret left icon"></i></span>
+              @endif
+            </div>
+            <div class="date">{{ $date->format('l F j, Y') }}</div>
+            <div class="link right">
+              @if($next)
+                <a href="/{{ $org->shortname }}/{{ $user->username }}/{{ $next->format('Y-m-d') }}"><i class="caret right icon"></i></a>
+              @else
+                <span style="opacity:0"><i class="caret right icon"></i></span>
+              @endif
+            </div>
+          </div>
+
+          <ul class="entry-list">
+            @foreach($entries as $entry)
+              @include('components/entry')
+            @endforeach
+          </ul>
+        </div>
 
       </div>
     </div>

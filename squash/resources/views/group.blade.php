@@ -40,7 +40,7 @@
       <div id="group_entries">
 
         <div class="user-list">
-          <div class="nav">
+          <div class="date-nav">
             <div class="link left">
               @if($previous)
                 <a href="/{{ $org->shortname }}/group/{{ $group->shortname }}/{{ $previous->format('Y-m-d') }}"><i class="caret left icon"></i></a>
