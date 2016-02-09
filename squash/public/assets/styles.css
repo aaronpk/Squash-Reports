@@ -115,7 +115,7 @@ nav {
   width: 240px;
   flex-grow: 0;
 }
-#profile_feed, #group_entries {
+#group_entries {
   flex-basis: 400px;
   flex-grow: 3;
 }
@@ -192,11 +192,12 @@ nav {
 
 /* ************************** */
 
-.user-entry-list {
+.group-list {
   background: #fff;
   border-radius: 6px;
   box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.2);
 }
+
 
 ul.entry-list {
   list-style-type: none;
@@ -352,6 +353,19 @@ ul.group_subscribers .hidden {
 #group_entries .user:last-child {
   border: 0;
 }
+
+#group_entries .group {
+  border-bottom: 1px #ddd solid;
+  margin-bottom: 0;
+  padding: 1em 1em 0.5em 1em;
+}
+#group_entries .group:last-child {
+  border: 0;
+}
+.group-list .group .groupname {
+  font-size: 1.5em;
+}
+
 
 .user .header {
   display: flex;

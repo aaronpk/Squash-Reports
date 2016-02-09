@@ -53,9 +53,9 @@
           </ul>
         </div>
       </div>
-      <div id="profile_feed">
+      <div id="group_entries">
 
-        <div class="user-entry-list">
+        <div class="group-list">
           <div class="date-nav">
             <div class="link left">
               @if($previous)
@@ -74,11 +74,18 @@
             </div>
           </div>
 
-          <ul class="entry-list">
-            @foreach($entries as $entry)
-              @include('components/entry')
-            @endforeach
-          </ul>
+          @foreach($groups as $group)
+            <div class="group">
+              <!-- TODO: add the group picture here once that's supported -->
+              <div class="groupname"><a href="/{{ $org->shortname }}/group/{{ $group['group']->shortname }}">{{ '#'.$group['group']->shortname }}</a></div>
+
+              <ul class="entry-list-compact">
+                @foreach($group['entries'] as $entry)
+                  @include('components/entry-compact')
+                @endforeach
+              </ul>
+            </div>
+          @endforeach
         </div>
 
       </div>

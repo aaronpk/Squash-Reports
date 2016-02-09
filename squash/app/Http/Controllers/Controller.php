@@ -136,6 +136,18 @@ class Controller extends BaseController
 
       $likes = $this->collectUserLikesOfEntries($who, $entries);
 
+      $groups = [];
+      foreach($entries as $e) {
+        if(!array_key_exists($e->group_id, $groups)) {
+          $groups[$e->group_id] = [
+            'group' => DB::table('groups')->where('id', $e->group_id)->first(),
+            'entries' => []
+          ];
+        }
+
+        $groups[$e->group_id]['entries'][] = $e;
+      }
+
       $previousEntry = DB::table('entries')
         ->where('user_id', $user->id)
         ->where('created_at', '<', $from->format('Y-m-d H:i:s'))
@@ -170,7 +182,7 @@ class Controller extends BaseController
         'who' => $who,
         'date' => $date,
         'my_groups' => $my_groups,
-        'entries' => $entries,
+        'groups' => $groups,
         'previous' => $previous,
         'next' => $next,
         'likes' => $likes,
