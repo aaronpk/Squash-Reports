@@ -5,6 +5,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Http\Request;
 use GuzzleHttp;
+use DateTimeZone;
 use DB, Log, Auth, Mail;
 use App\Jobs\ReplyViaSlack;
 use \Firebase\JWT\JWT;
@@ -248,12 +249,20 @@ class Slack extends BaseController {
         // TODO: If it becomes a problem that a bunch of new people are making new groups,
         // we'll need to add a check earlier that only adds a new user account
         // if they're posting into an existing group.
+        try {
+          // Test out the user timezone to make sure we can parse it
+          $tz = new DateTimeZone($user->timezone);
+          $timezone = $user->timezone;
+        } catch(\Exception $e) {
+          // Fall back to UTC if we can't parse the user's timezone
+          $timezone = 'UTC';
+        }
         $groupID = DB::table('groups')->insertGetId([
           'org_id' => $org->id,
           'shortname' => ($request->input('channel_name') == 'general' ? $org->shortname : $request->input('channel_name')),
           'created_at' => date('Y-m-d H:i:s'),
           'created_by' => $userID,
-          'timezone' => $user->timezone,
+          'timezone' => $timezone,
         ]);
         DB::table('slack_channels')->insertGetId([
           'slack_team_id' => $team->id,
@@ -362,8 +371,13 @@ class Slack extends BaseController {
           $update['photo_url'] = $photo_url;
         if($user->display_name == '' && $userInfo->user->profile->real_name)
           $update['display_name'] = $userInfo->user->profile->real_name;
-        if($user->timezone == '' && $userInfo->user->tz)
-          $update['timezone'] = $userInfo->user->tz;
+        if($user->timezone == '' && $userInfo->user->tz) {
+          try {
+            $tz = new DateTimeZone($userInfo->user->tz);
+            $update['timezone'] = $userInfo->user->tz;
+          } catch(\Exception $e) {
+          }
+        }
         if(count($update)) {
           DB::table('users')
             ->where('id', $user->id)
@@ -372,13 +386,19 @@ class Slack extends BaseController {
       }
 
     } else {
+      try {
+        $tz = new DateTimeZone($userInfo->user->tz);
+        $timezone = $userInfo->user->tz;
+      } catch(\Exception $e) {
+        $timezone = 'UTC';
+      }
       $userID = DB::table('users')->insertGetId([
         'org_id' => $orgID,
         'username' => $userInfo->user->name, // TODO: check for duplicate usernames and change the new one in some way
         'email' => $userInfo->user->profile->email,
         'display_name' => $userInfo->user->profile->real_name,
         'photo_url' => $photo_url,
-        'timezone' => $userInfo->user->tz,
+        'timezone' => $timezone,
         'created_at' => date('Y-m-d H:i:s')
       ]);
       $new = true;

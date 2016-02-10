@@ -29,6 +29,7 @@ class RouteServiceProvider extends ServiceProvider
         $router->pattern('group', '[a-zA-Z0-9\-_]+');
         $router->pattern('username', '[a-zA-Z0-9\-_\.]+');
         $router->pattern('date', '[0-9]{4}-[0-9]{2}-[0-9]{2}');
+        $router->pattern('year', '[0-9]{4}');
 
         parent::boot($router);
     }

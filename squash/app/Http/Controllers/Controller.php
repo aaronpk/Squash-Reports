@@ -99,11 +99,18 @@ class Controller extends BaseController
 
       list($my_groups, $other_groups) = self::load_user_groups($user);
 
+      $date = false; $year = false;
       if($request->date) {
         try {
           $date = new DateTime($request->date, new DateTimeZone($user->timezone));
         } catch(Exception $e) {
           return 'invalid date';
+        }
+      } elseif($request->year) {
+        try {
+          $year = new DateTime($request->year.'-01-01', new DateTimeZone($user->timezone));
+        } catch(Exception $e) {
+          return 'invalid year';
         }
       } else {
         $latestEntry = DB::table('entries')
@@ -119,10 +126,19 @@ class Controller extends BaseController
         }
       }
 
-      $from = new DateTime($date->format('Y-m-d 00:00:00'), new DateTimeZone($user->timezone));
-      $from->setTimeZone(new DateTimeZone('UTC'));
-      $to = new DateTime($date->format('Y-m-d 23:59:59'), new DateTimeZone($user->timezone));
-      $to->setTimeZone(new DateTimeZone('UTC'));
+      if($date) {
+        $from = new DateTime($date->format('Y-m-d 00:00:00'), new DateTimeZone($user->timezone));
+        $from->setTimeZone(new DateTimeZone('UTC'));
+        $to = new DateTime($date->format('Y-m-d 23:59:59'), new DateTimeZone($user->timezone));
+        $to->setTimeZone(new DateTimeZone('UTC'));
+      } elseif($year) {
+        $from = new DateTime($year->format('Y-01-01 00:00:00'), new DateTimeZone($user->timezone));
+        $from->setTimeZone(new DateTimeZone('UTC'));
+        $to = new DateTime($year->format('Y-12-31 23:59:59'), new DateTimeZone($user->timezone));
+        $to->setTimeZone(new DateTimeZone('UTC'));
+      } else {
+        return 'no date provided';
+      }
 
       $entries = DB::table('entries')
         ->select('entries.*', 'groups.shortname AS groupname', 'users.username', 'users.display_name', 'users.photo_url', 'users.timezone')
@@ -181,6 +197,7 @@ class Controller extends BaseController
         'user' => $user,
         'who' => $who,
         'date' => $date,
+        'year' => $year,
         'my_groups' => $my_groups,
         'groups' => $groups,
         'previous' => $previous,

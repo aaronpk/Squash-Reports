@@ -64,7 +64,7 @@
                 <span style="opacity:0"><i class="caret left icon"></i></span>
               @endif
             </div>
-            <div class="date">{{ $date->format('l F j, Y') }}</div>
+            <div class="date">{{ $date ? $date->format('l F j, Y') : $year->format('Y') }}</div>
             <div class="link right">
               @if($next)
                 <a href="/{{ $org->shortname }}/{{ $user->username }}/{{ $next->format('Y-m-d') }}"><i class="caret right icon"></i></a>
@@ -80,8 +80,12 @@
               <div class="groupname"><a href="/{{ $org->shortname }}/group/{{ $group['group']->shortname }}">{{ '#'.$group['group']->shortname }}</a></div>
 
               <ul class="entry-list-compact">
+                {{ $last = false }}
                 @foreach($group['entries'] as $entry)
-                  @include('components/entry-compact')
+                  @if($year && ($last == false || $last->format('M') != (new DateTime($entry->created_at))->format('M')))
+                    <h2>{{ (new DateTime($entry->created_at))->format('M') }}</h2>
+                  @endif
+                  @include('components/entry-compact', ['last'=>$last=(new DateTime($entry->created_at))])
                 @endforeach
               </ul>
             </div>
