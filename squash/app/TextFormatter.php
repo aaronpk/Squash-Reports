@@ -46,7 +46,7 @@ class TextFormatter {
         ->first();
 
       if($emoji) {
-        return '<img src="/emoji/img-apple-64/'.$emoji->filename.'" alt="'.$matches[1].'" class="emojichar">';
+        return '<img src="'.env('APP_URL').'/emoji/img-apple-64/'.$emoji->filename.'" alt="'.$matches[1].'" class="emojichar">';
       } else {
         return $matches[1];
       }
