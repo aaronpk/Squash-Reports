@@ -70,6 +70,13 @@ class Slack extends BaseController {
 
         } else {
           $orgID = $slackteam->org_id;
+
+          // Always replace the access token when someone logs back in
+          DB::table('slack_teams')
+            ->where('id', $slackteam->id)
+            ->update([
+              'slack_token' => $login->access_token
+            ]);
         }
 
         // Check if the Slack user already exists
