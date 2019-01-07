@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         Commands\ImportEmoji::class,
         Commands\ImportDone::class,
         Commands\CleanEntries::class,
+        Commands\Login::class,
     ];
 
     /**
