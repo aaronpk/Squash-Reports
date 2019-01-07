@@ -21,6 +21,16 @@
             <div><i class="clock icon"></i> <span class="timezone-name">{{ $group->timezone }}</span></div>
           </div>
 
+          @if($user_subscribed && $subscription)
+            <div class="subscription-info">
+              <div><i class="envelope icon"></i> <span class="delivery-time">
+                {{ ucfirst($subscription->frequency) }}
+                {{ $subscription->frequency == 'weekly' ? ' on '.App\TextFormatter::weekday($subscription->weekly_dow).'s' : '' }}
+                at {{ App\TextFormatter::display_hour($subscription->daily_localtime) }}
+              </span></div>
+            </div>
+          @endif
+
           <br>
 
           <button class="ui button {{ $user_subscribed ? 'subscribed' : 'not-subscribed' }} subscribe-button" style="width: 208px;" data-group-id="{{ $group->id }}"></button>

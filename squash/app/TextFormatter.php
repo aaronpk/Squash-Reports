@@ -93,4 +93,26 @@ class TextFormatter {
 
     return $text;
   }
+
+  public static function weekday($dow) {
+    switch($dow) {
+      case 1: return 'Monday';
+      case 2: return 'Tuesday';
+      case 3: return 'Wednesday';
+      case 4: return 'Thursday';
+      case 5: return 'Friday';
+      case 6: return 'Saturday';
+      case 7: return 'Sunday';
+    }
+  }
+
+  public static function display_hour($hour) {
+    if($hour == 0)
+      return 'Midnight';
+    if($hour > 12) {
+      $hour -= 12;
+      return $hour.'pm';
+    }
+    return $hour.'am';
+  }
 }

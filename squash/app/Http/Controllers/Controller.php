@@ -221,6 +221,11 @@ class Controller extends BaseController
         ->orderBy('users.username', 'asc')
         ->get();
 
+      $subscription = DB::table('subscriptions')
+        ->where('user_id', $who->id)
+        ->where('group_id', $group->id)
+        ->first();
+
       if($request->date) {
         try {
           $date = new DateTime($request->date, new DateTimeZone($group->timezone));
@@ -309,7 +314,8 @@ class Controller extends BaseController
         'previous' => $previous,
         'next' => $next,
         'likes' => $likes,
-        'user_subscribed' => $subscribed
+        'user_subscribed' => $subscribed,
+        'subscription' => $subscription,
       ]);
     }
 
