@@ -159,6 +159,10 @@ nav {
   line-height: 1.7em;
 }
 
+a.year-link {
+  color: rgba(0,0,0,.87);
+}
+
 
 @media only screen and (max-width: 600px) {
   #profile_text {
