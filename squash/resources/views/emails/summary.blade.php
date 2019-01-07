@@ -8,7 +8,12 @@
   <div style="padding: 20px 10px; background-color: #ffffff;">
 
     <div style="margin-bottom: 20px;">
-      This report was generated on <?= $date->format('D M j, Y g:ia (P)') ?> and includes entries from <?= $from->format('D g:ia') ?> to <?= $to->format('D g:ia') ?>.
+      This report was generated on <?= $to->format('D M j, Y g:ia (P)') ?> and includes entries since
+      @if($interval == 'weekly')
+        <?= $from->format('D M j, g:ia') ?>.
+      @else
+        <?= $from->format('D g:ia') ?>.
+      @endif
     </div>
 
     @foreach($users as $user)
@@ -17,7 +22,13 @@
         <ul class="entry-list-compact">
           @foreach($user['entries'] as $entry)
             <li>
-              <a href="{{ env('APP_URL') }}/{{ $org->shortname }}/entry/{{ $entry->id }}" style="color:#8e9d60;">@entrytime($entry)</a>
+              <a href="{{ env('APP_URL') }}/{{ $org->shortname }}/entry/{{ $entry->id }}" style="color:#8e9d60;">
+                @if($interval == 'weekly')
+                  @entrytimeweekly($entry)
+                @else
+                  @entrytime($entry)
+                @endif
+              </a>
               <span class="text"><span style="color: #888;">/{{ $entry->command }}</span> {!! App\TextFormatter::format($entry->text, $org) !!}</span>
             </li>
           @endforeach
@@ -32,7 +43,7 @@
   </div>
 
   <div style="font-size: 9pt; text-align: center; padding-top: 10px; border-top: 3px #6d812f solid;">
-    This email was sent to <?= implode(', ', array_map(function($u){ return $u->email; }, $subscribers)) ?> for the "<?= $group->shortname ?>" team. <a href="{{ env('APP_URL') }}/{{ $org->shortname }}/group/{{ $group->shortname }}">Change your subscription preferences</a>.
+    This email was sent to <?= implode(', ', array_map(function($u){ return $u->email; }, $subscribers)) ?> for the "{{ $group->shortname }}" team in {{ $org->shortname }}. <a href="{{ env('APP_URL') }}/{{ $org->shortname }}/group/{{ $group->shortname }}">Change your subscription preferences</a>.
   </div>
 </div>
 

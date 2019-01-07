@@ -14,6 +14,7 @@ class Kernel extends ConsoleKernel
      */
     protected $commands = [
         Commands\DailyReports::class,
+        Commands\WeeklyReports::class,
         Commands\SendReport::class,
         Commands\ImportEmoji::class,
         Commands\ImportDone::class,

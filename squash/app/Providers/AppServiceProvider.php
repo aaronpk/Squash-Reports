@@ -34,6 +34,13 @@ class AppServiceProvider extends ServiceProvider
           $date->setTimeZone(new DateTimeZone($entry->timezone));
           echo $date->format(\'g:ia\'); ?>';
       });
+
+      Blade::directive('entrytimeweekly', function($entry) {
+        return '<?php
+          $date = new DateTime($entry->created_at);
+          $date->setTimeZone(new DateTimeZone($entry->timezone));
+          echo $date->format(\'D g:ia\'); ?>';
+      });
     }
 
     /**

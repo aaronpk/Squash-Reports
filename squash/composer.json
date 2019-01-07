@@ -7,10 +7,10 @@
     "require": {
         "php": ">=5.5.9",
         "laravel/framework": "5.2.*",
-        "guzzlehttp/guzzle": "6.*",
+        "guzzlehttp/guzzle": "^6.3",
         "predis/predis": "1.*",
         "firebase/php-jwt": "3.*",
-        "p3k/micropub": "^0.0.3"        
+        "p3k/micropub": "^0.0.3"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",

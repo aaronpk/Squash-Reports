@@ -36,7 +36,7 @@ class DailyReports extends Command
       }
       if((int)$date->format('G') == $group->daily_localtime) {
         Log::info('Queuing a report for '.$group->shortname.' at '.$date->format('g:ia P'));
-        $this->dispatch(new SendReport($date->format('Y-m-d\TH:00:00P'), $group->id, explode(',',$group->users)));
+        $this->dispatch(new SendReport($date->format('Y-m-d\TH:00:00P'), $group->id, explode(',',$group->users), 'daily'));
       }
     }
   }
