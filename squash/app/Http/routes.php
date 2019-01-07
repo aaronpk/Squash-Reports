@@ -5,6 +5,9 @@ Route::post('/slack/incoming', 'Slack@incoming');
 
 Route::get('/auth/slack-login', 'Slack@login');
 
+Route::get('/micropub', 'Micropub@get');
+Route::post('/micropub', 'Micropub@post');
+
 Route::group(['middleware' => ['web']], function () {
   Route::get('/auth/login', 'Controller@login');
   Route::get('/auth/logout', 'Controller@logout');
