@@ -32,5 +32,6 @@ class Kernel extends ConsoleKernel
     {
       // Every hour, send out any daily reports that are scheduled for that hour
       $schedule->command('report:daily')->hourly();
+      $schedule->command('report:weekly')->hourly();
     }
 }
